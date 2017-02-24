@@ -70,7 +70,7 @@ endif
 #
 # Work out where we are going to be building things
 #
-TMPDIR			?=	/tmp
+TMPDIR			?=	/home/ubuntu/ardupilot/build
 
 ifneq ($(findstring px4, $(MAKECMDGOALS)),)
 # when building px4 we need all sources to be inside the sketchbook directory
