@@ -465,7 +465,7 @@ bool AP_Arming::pre_arm_checks(bool report)
 #endif
 
     return hardware_safety_check(report)
-        &  barometer_checks(report)
+//        &  barometer_checks(report)
         &  ins_checks(report)
         &  compass_checks(report)
         &  gps_checks(report)
