@@ -12,4 +12,4 @@ public:
 private:
 	uint16_t fakeAlt;
 	uint8_t _instance;
-}
+};

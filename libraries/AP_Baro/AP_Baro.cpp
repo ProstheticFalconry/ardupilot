@@ -26,13 +26,6 @@
 #include <AP_Math/AP_Math.h>
 #include <AP_BoardConfig/AP_BoardConfig.h>
 
-#include "AP_Baro_BMP085.h"
-#include "AP_Baro_BMP280.h"
-#include "AP_Baro_HIL.h"
-#include "AP_Baro_MS5611.h"
-#include "AP_Baro_PX4.h"
-#include "AP_Baro_qflight.h"
-#include "AP_Baro_QURT.h"
 #include "AP_Baro_Ultrasound.h"
 
 extern const AP_HAL::HAL& hal;
@@ -318,89 +311,10 @@ bool AP_Baro::_add_backend(AP_Baro_Backend *backend)
  */
 void AP_Baro::init(void)
 {
-    if (_hil_mode) {
-        drivers[0] = new AP_Baro_HIL(*this);
-        _num_drivers = 1;
-        return;
-    }
-
-#if HAL_BARO_DEFAULT == HAL_BARO_PX4 || HAL_BARO_DEFAULT == HAL_BARO_VRBRAIN
-    switch (AP_BoardConfig::get_board_type()) {
-    case AP_BoardConfig::PX4_BOARD_PX4V1:
-#ifdef HAL_BARO_MS5611_I2C_BUS
-        ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                          std::move(hal.i2c_mgr->get_device(HAL_BARO_MS5611_I2C_BUS, HAL_BARO_MS5611_I2C_ADDR))));
-#endif
-        break;
-
-    case AP_BoardConfig::PX4_BOARD_PIXHAWK:
-    case AP_BoardConfig::PX4_BOARD_PHMINI:
-    case AP_BoardConfig::PX4_BOARD_PH2SLIM:
-        ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                          std::move(hal.spi->get_device(HAL_BARO_MS5611_NAME))));
-        break;
-
-    case AP_BoardConfig::PX4_BOARD_PIXHAWK2:
-        ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                          std::move(hal.spi->get_device(HAL_BARO_MS5611_SPI_EXT_NAME))));
-        ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                          std::move(hal.spi->get_device(HAL_BARO_MS5611_NAME))));
-        break;
-
-    case AP_BoardConfig::PX4_BOARD_PIXRACER:
-        ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                          std::move(hal.spi->get_device(HAL_BARO_MS5611_SPI_INT_NAME))));
-        break;
-
-    default:
-        drivers[0] = new AP_Baro_PX4(*this);
-        _num_drivers = 1;
-        break;
-    }
-#elif HAL_BARO_DEFAULT == HAL_BARO_HIL
-    drivers[0] = new AP_Baro_HIL(*this);
-    _num_drivers = 1;
-#elif HAL_BARO_DEFAULT == HAL_BARO_BMP085
-    drivers[0] = new AP_Baro_BMP085(*this,
-        std::move(hal.i2c_mgr->get_device(HAL_BARO_BMP085_BUS, HAL_BARO_BMP085_I2C_ADDR)));
-    _num_drivers = 1;
-#elif HAL_BARO_DEFAULT == HAL_BARO_BMP280_I2C
-    ADD_BACKEND(AP_Baro_BMP280::probe(*this,
-                                      std::move(hal.i2c_mgr->get_device(HAL_BARO_BMP280_BUS, HAL_BARO_BMP280_I2C_ADDR))));
-#elif HAL_BARO_DEFAULT == HAL_BARO_BMP280_SPI
-    ADD_BACKEND(AP_Baro_BMP280::probe(*this,
-                                      std::move(hal.spi->get_device(HAL_BARO_BMP280_NAME))));
-#elif HAL_BARO_DEFAULT == HAL_BARO_MS5611_I2C
-    ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                      std::move(hal.i2c_mgr->get_device(HAL_BARO_MS5611_I2C_BUS, HAL_BARO_MS5611_I2C_ADDR))));
-#elif HAL_BARO_DEFAULT == HAL_BARO_MS5611_SPI
-    ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                      std::move(hal.spi->get_device(HAL_BARO_MS5611_NAME))));
-#elif HAL_BARO_DEFAULT == HAL_BARO_MS5607_I2C
-    ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                      std::move(hal.i2c_mgr->get_device(HAL_BARO_MS5607_I2C_BUS, HAL_BARO_MS5607_I2C_ADDR)),
-                                      AP_Baro_MS56XX::BARO_MS5607));
-#elif HAL_BARO_DEFAULT == HAL_BARO_MS5637_I2C
-    ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                      std::move(hal.i2c_mgr->get_device(HAL_BARO_MS5637_I2C_BUS, HAL_BARO_MS5637_I2C_ADDR)),
-                                      AP_Baro_MS56XX::BARO_MS5637));
-#elif HAL_BARO_DEFAULT == HAL_BARO_QFLIGHT
-    drivers[0] = new AP_Baro_QFLIGHT(*this);
-    _num_drivers = 1;
-#elif HAL_BARO_DEFAULT == HAL_BARO_QURT
-    drivers[0] = new AP_Baro_QURT(*this);
-    _num_drivers = 1;
-#elif HAL_BARO_DEFAULT == HAL_BARO_ULTRASOUND
+#if HAL_BARO_DEFAULT == HAL_BARO_ULTRASOUND
 	drivers[0] = new AP_Baro_Ultrasound(*this);
 	_num_drivers = 1;
 #endif
-
-    // can optionally have baro on I2C too
-    if (_ext_bus >= 0) {
-        ADD_BACKEND(AP_Baro_MS56XX::probe(*this,
-                                          std::move(hal.i2c_mgr->get_device(_ext_bus, HAL_BARO_MS5611_I2C_ADDR))));
-    }
-    
     if (_num_drivers == 0 || _num_sensors == 0 || drivers[0] == nullptr) {
         AP_HAL::panic("Baro: unable to initialise driver");
     }

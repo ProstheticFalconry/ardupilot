@@ -5,7 +5,6 @@ LIBRARIES += AP_Baro
 LIBRARIES += AP_Common
 LIBRARIES += AP_Compass
 LIBRARIES += AP_Declination
-LIBRARIES += AP_GPS
 LIBRARIES += AP_InertialSensor
 LIBRARIES += AP_Math
 LIBRARIES += AP_Notify
@@ -20,6 +19,5 @@ LIBRARIES += AP_RangeFinder
 LIBRARIES += AP_Mission
 LIBRARIES += AP_Rally
 LIBRARIES += AP_Terrain
-LIBRARIES += AP_OpticalFlow
 LIBRARIES += StorageManager
 

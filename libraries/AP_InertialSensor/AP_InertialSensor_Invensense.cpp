@@ -27,18 +27,7 @@
 
 extern const AP_HAL::HAL& hal;
 
-#if CONFIG_HAL_BOARD == HAL_BOARD_LINUX
-#include <AP_HAL_Linux/GPIO.h>
-#if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_ERLEBOARD || CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_PXF
 #define INVENSENSE_DRDY_PIN BBB_P8_14
-#elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_RASPILOT
-#define INVENSENSE_DRDY_PIN RPI_GPIO_24
-#elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_MINLURE
-#define INVENSENSE_DRDY_PIN MINNOW_GPIO_I2S_CLK
-#elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_DISCO || CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
-#define INVENSENSE_EXT_SYNC_ENABLE 1
-#endif
-#endif
 
 #define debug(fmt, args ...)  do {printf("MPU: " fmt "\n", ## args); } while(0)
 
@@ -509,6 +498,7 @@ AuxiliaryBus *AP_InertialSensor_Invensense::get_auxiliary_bus()
  */
 bool AP_InertialSensor_Invensense::_data_ready()
 {
+    debug("drdy pin is %d\n",_drdy_pin->read());
     if (_drdy_pin) {
         return _drdy_pin->read() != 0;
     }

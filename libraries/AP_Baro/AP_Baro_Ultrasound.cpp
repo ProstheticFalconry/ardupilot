@@ -12,5 +12,5 @@ AP_Baro_Ultrasound::AP_Baro_Ultrasound(AP_Baro &baro) :
 
 void AP_Baro_Ultrasound::update(void)
 {
-	_copy_to_frontend(_instance,0,0);
+	_copy_to_frontend(_instance,101.3,25);
 }
