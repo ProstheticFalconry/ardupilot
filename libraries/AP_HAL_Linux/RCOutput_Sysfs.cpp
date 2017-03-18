@@ -24,12 +24,28 @@ namespace Linux {
 
 RCOutput_Sysfs::RCOutput_Sysfs(uint8_t chip, uint8_t channel_base, uint8_t channel_count)
     : _chip(chip)
+    , _chip_list(0)
+    , _chip_count(0)
     , _channel_base(channel_base)
     , _channel_count(channel_count)
     , _pwm_channels(new PWM_Sysfs_Base *[_channel_count])
     , _pending(new uint16_t[_channel_count])
+    , _multichip(false)
 {
 }
+
+RCOutput_Sysfs::RCOutput_Sysfs(uint8_t *chip_list, uint8_t chip_count, uint8_t channel_base, uint8_t channel_count_per_chip)
+    : _chip_list(chip_list)
+    , _chip(0)
+    , _chip_count(chip_count)
+    , _channel_base(channel_base)
+    , _channel_count(channel_count_per_chip)
+    , _pwm_channels(new PWM_Sysfs_Base *[_chip_count*_channel_count])
+    , _pending(new uint16_t[_chip_count*_channel_count])
+    , _multichip(true)
+{
+}
+
 
 RCOutput_Sysfs::~RCOutput_Sysfs()
 {
@@ -42,22 +58,29 @@ RCOutput_Sysfs::~RCOutput_Sysfs()
 
 void RCOutput_Sysfs::init()
 {
-    for (uint8_t i = 0; i < _channel_count; i++) {
-#if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_DISCO
-        _pwm_channels[i] = new PWM_Sysfs_Bebop(_channel_base+i);
-#else
-        _pwm_channels[i] = new PWM_Sysfs(_chip, _channel_base+i);
-#endif
-        if (!_pwm_channels[i]) {
-            AP_HAL::panic("RCOutput_Sysfs_PWM: Unable to setup PWM pin.");
-        }
-        _pwm_channels[i]->init();
-        _pwm_channels[i]->enable(false);
+    if(!_multichip){
+    	for (uint8_t i = 0; i < _channel_count; i++) {
+        	_pwm_channels[i] = new PWM_Sysfs(_chip, _channel_base+i);
+        	if (!_pwm_channels[i]) {
+            	AP_HAL::panic("RCOutput_Sysfs_PWM: Unable to setup PWM pin.");
+        	}
+        	init_channel(_pwm_channels[i]);
+    	}
+    } else {
+	uint8_t channel_index;
+    	for (uint8_t i = 0; i < _chip_count; i++) {
+		for (uint8_t j = 0; j < _channel_count; j++){
+			channel_index = (i*_channel_count) + j;
+			_pwm_channels[channel_index] = new PWM_Sysfs(*(_chip_list+i), _channel_base+j);
+			if (!_pwm_channels[channel_index]) {
+			AP_HAL::panic("RCOutput_Sysfs_PWM: UNable to setup PWM pin.");
+			}
+			init_channel(_pwm_channels[channel_index]);
+			
 
-        /* Set the initial frequency */
-        _pwm_channels[i]->set_freq(50);
-        _pwm_channels[i]->set_duty_cycle(0);
-        _pwm_channels[i]->set_polarity(PWM_Sysfs::Polarity::NORMAL);
+		}
+	}
+
     }
 }
 
@@ -143,6 +166,16 @@ void RCOutput_Sysfs::push(void)
     }
     _pending_mask = 0;
     _corked = false;
+}
+
+void RCOutput_Sysfs::init_channel(PWM_Sysfs_Base *pwm_chan){
+	pwm_chan->init();
+        pwm_chan->enable(false);
+
+        /* Set the initial frequency */
+        pwm_chan->set_freq(50);
+        pwm_chan->set_duty_cycle(0);
+        pwm_chan->set_polarity(PWM_Sysfs::Polarity::NORMAL);
 }
     
 }

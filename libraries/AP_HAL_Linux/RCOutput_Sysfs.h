@@ -8,6 +8,7 @@ namespace Linux {
 class RCOutput_Sysfs : public AP_HAL::RCOutput {
 public:
     RCOutput_Sysfs(uint8_t chip, uint8_t channel_base, uint8_t channel_count);
+    RCOutput_Sysfs(uint8_t *chip_list,uint8_t chip_count, uint8_t channel_base, uint8_t channel_count_per_chip);
     ~RCOutput_Sysfs();
 
     static RCOutput_Sysfs *from(AP_HAL::RCOutput *rcoutput)
@@ -28,14 +29,19 @@ public:
 
 private:
     const uint8_t _chip;
+    const uint8_t _chip_count;
+    const uint8_t *_chip_list;
     const uint8_t _channel_base;
     const uint8_t _channel_count;
+    const bool _multichip;
     PWM_Sysfs_Base **_pwm_channels;
 
     // for handling cork()/push()
     bool _corked;
     uint16_t *_pending;
     uint32_t _pending_mask;
+
+    void init_channel(PWM_Sysfs_Base *pwm_chan);
 };
 
 }

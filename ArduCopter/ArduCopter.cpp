@@ -175,7 +175,7 @@ void Copter::setup()
     // setup initial performance counters
     //perf_info_reset();
     //fast_loopTimer = AP_HAL::micros();
-     motor_test_internal_start(0,1000);
+     motor_test_internal_start(1,1000);
      motor_test_output_internal();
 
 }
