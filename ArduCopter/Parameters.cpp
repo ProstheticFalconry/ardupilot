@@ -644,12 +644,6 @@ const AP_Param::Info Copter::var_info[] = {
 
     // variables not in the g class which contain EEPROM saved variables
 
-#if CAMERA == ENABLED
-    // @Group: CAM_
-    // @Path: ../libraries/AP_Camera/AP_Camera.cpp
-    GOBJECT(camera,           "CAM_", AP_Camera),
-#endif
-
     // @Group: RELAY_
     // @Path: ../libraries/AP_Relay/AP_Relay.cpp
     GOBJECT(relay,                  "RELAY_", AP_Relay),
@@ -717,12 +711,6 @@ const AP_Param::Info Copter::var_info[] = {
     // @Group: AHRS_
     // @Path: ../libraries/AP_AHRS/AP_AHRS.cpp
     GOBJECT(ahrs,                   "AHRS_",    AP_AHRS),
-
-#if MOUNT == ENABLED
-    // @Group: MNT
-    // @Path: ../libraries/AP_Mount/AP_Mount.cpp
-    GOBJECT(camera_mount,           "MNT",  AP_Mount),
-#endif
 
     // @Group: LOG
     // @Path: ../libraries/DataFlash/DataFlash.cpp

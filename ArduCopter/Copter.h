@@ -68,9 +68,6 @@
 #include <AP_Buffer/AP_Buffer.h>          // APM FIFO Buffer
 #include <AP_Relay/AP_Relay.h>           // APM relay
 #include <AP_ServoRelayEvents/AP_ServoRelayEvents.h>
-#include <AP_Camera/AP_Camera.h>          // Photo or video camera
-#include <AP_Mount/AP_Mount.h>           // Camera/Antenna mount
-#include <AP_Airspeed/AP_Airspeed.h>        // needed for AHRS build
 #include <AP_Vehicle/AP_Vehicle.h>         // needed for AHRS build
 #include <AP_InertialNav/AP_InertialNav.h>     // ArduPilot Mega inertial navigation library
 #include <AC_WPNav/AC_WPNav.h>           // ArduCopter waypoint navigation library
@@ -519,17 +516,6 @@ private:
     // handle repeated servo and relay events
     AP_ServoRelayEvents ServoRelayEvents;
 
-    // Reference to the camera object (it uses the relay object inside it)
-#if CAMERA == ENABLED
-    AP_Camera camera;
-#endif
-
-    // Camera/Antenna mount tracking and stabilisation stuff
-#if MOUNT == ENABLED
-    // current_loc uses the baro/gps soloution for altitude rather than gps only.
-    AP_Mount camera_mount;
-#endif
-
     // AC_Fence library to reduce fly-aways
 #if AC_FENCE == ENABLED
     AC_Fence    fence;
@@ -976,6 +962,9 @@ private:
     bool mavlink_motor_test_check(mavlink_channel_t chan, bool check_rc);
     uint8_t mavlink_motor_test_start(mavlink_channel_t chan, uint8_t motor_seq, uint8_t throttle_type, uint16_t throttle_value, float timeout_sec);
     void motor_test_stop();
+    void motor_test_output_internal();
+    uint8_t motor_test_internal_start(uint8_t mot_seq, uint32_t mot_throt);
+    void motor_test_internal_stop();
     void arm_motors_check();
     void auto_disarm_check();
     bool init_arm_motors(bool arming_from_gcs);

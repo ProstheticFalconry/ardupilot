@@ -206,11 +206,6 @@ void Copter::init_ardupilot()
     if(g.compass_enabled)
         init_compass();
 
-#if OPTFLOW == ENABLED
-    // make optflow available to AHRS
-    ahrs.set_optflow(&optflow);
-#endif
-
     // init Location class
     Location_Class::set_ahrs(&ahrs);
 #if AP_TERRAIN_AVAILABLE && AC_TERRAIN
@@ -226,11 +221,6 @@ void Copter::init_ardupilot()
 
     // init the optical flow sensor
     init_optflow();
-
-#if MOUNT == ENABLED
-    // initialise camera mount
-    camera_mount.init(&DataFlash, serial_manager);
-#endif
 
 #if PRECISION_LANDING == ENABLED
     // initialise precision landing

@@ -476,15 +476,6 @@ void GCS_MAVLINK::handle_mission_write_partial_list(AP_Mission &mission, mavlink
 
 
 /*
-  handle a GIMBAL_REPORT mavlink packet
- */
-void GCS_MAVLINK::handle_gimbal_report(AP_Mount &mount, mavlink_message_t *msg) const
-{
-    mount.handle_gimbal_report(chan, msg);
-}
-
-
-/*
   return true if a channel has flow control
  */
 bool GCS_MAVLINK::have_flow_control(void)

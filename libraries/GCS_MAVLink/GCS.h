@@ -12,7 +12,6 @@
 #include <stdint.h>
 #include "MAVLink_routing.h"
 #include <AP_SerialManager/AP_SerialManager.h>
-#include <AP_Mount/AP_Mount.h>
 #include <AP_Avoidance/AP_Avoidance.h>
 #include <AP_HAL/utility/RingBuffer.h>
 #include <AP_Frsky_Telem/AP_Frsky_Telem.h>
@@ -239,8 +238,6 @@ protected:
     void handle_param_set(mavlink_message_t *msg, DataFlash_Class *DataFlash);
     void handle_param_request_list(mavlink_message_t *msg);
     void handle_param_request_read(mavlink_message_t *msg);
-
-    void handle_gimbal_report(AP_Mount &mount, mavlink_message_t *msg) const;
     void handle_radio_status(mavlink_message_t *msg, DataFlash_Class &dataflash, bool log_radio);
     void handle_serial_control(mavlink_message_t *msg, AP_GPS &gps);
 

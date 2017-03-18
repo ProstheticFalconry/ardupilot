@@ -71,12 +71,6 @@ Copter::Copter(void) :
     rtl_loiter_start_time(0),
     auto_trim_counter(0),
     ServoRelayEvents(relay),
-#if CAMERA == ENABLED
-    camera(&relay),
-#endif
-#if MOUNT == ENABLED
-    camera_mount(ahrs, current_loc),
-#endif
 #if AC_FENCE == ENABLED
     fence(ahrs, inertial_nav),
 #endif

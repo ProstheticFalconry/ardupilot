@@ -26,7 +26,7 @@
 #include "AP_InertialSensor_Invensense.h"
 
 extern const AP_HAL::HAL& hal;
-
+#include <AP_HAL_Linux/GPIO.h>
 #define INVENSENSE_DRDY_PIN BBB_P8_14
 
 #define debug(fmt, args ...)  do {printf("MPU: " fmt "\n", ## args); } while(0)

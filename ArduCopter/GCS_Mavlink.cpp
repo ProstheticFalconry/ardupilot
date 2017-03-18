@@ -476,10 +476,6 @@ bool GCS_MAVLINK_Copter::try_send_message(enum ap_message id)
         break;
 
     case MSG_CAMERA_FEEDBACK:
-#if CAMERA == ENABLED
-        CHECK_PAYLOAD_SIZE(CAMERA_FEEDBACK);
-        copter.camera.send_feedback(chan, copter.gps, copter.ahrs, copter.current_loc);
-#endif
         break;
 
     case MSG_STATUSTEXT:
@@ -513,10 +509,6 @@ bool GCS_MAVLINK_Copter::try_send_message(enum ap_message id)
         break;
 
     case MSG_MOUNT_STATUS:
-#if MOUNT == ENABLED
-        CHECK_PAYLOAD_SIZE(MOUNT_STATUS);    
-        copter.camera_mount.status_msg(chan);
-#endif // MOUNT == ENABLED
         break;
 
     case MSG_BATTERY2:
@@ -532,10 +524,6 @@ bool GCS_MAVLINK_Copter::try_send_message(enum ap_message id)
         break;
 
     case MSG_GIMBAL_REPORT:
-#if MOUNT == ENABLED
-        CHECK_PAYLOAD_SIZE(GIMBAL_REPORT);
-        copter.camera_mount.send_gimbal_report(chan);
-#endif
         break;
 
     case MSG_EKF_STATUS_REPORT:
@@ -867,9 +855,6 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
 
     case MAVLINK_MSG_ID_PARAM_VALUE:
     {
-#if MOUNT == ENABLED
-        copter.camera_mount.handle_param_value(msg);
-#endif
         break;
     }
 
@@ -953,9 +938,6 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
 
     case MAVLINK_MSG_ID_GIMBAL_REPORT:
     {
-#if MOUNT == ENABLED
-        handle_gimbal_report(copter.camera_mount, msg);
-#endif
         break;
     }
 
@@ -1152,37 +1134,7 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
             copter.set_auto_yaw_roi(roi_loc);
             result = MAV_RESULT_ACCEPTED;
             break;
-
-#if CAMERA == ENABLED
-        case MAV_CMD_DO_DIGICAM_CONFIGURE:
-            copter.camera.configure(packet.param1,
-                                    packet.param2,
-                                    packet.param3,
-                                    packet.param4,
-                                    packet.param5,
-                                    packet.param6,
-                                    packet.param7);
-
-            result = MAV_RESULT_ACCEPTED;
-            break;
-
-        case MAV_CMD_DO_DIGICAM_CONTROL:
-            if (copter.camera.control(packet.param1,
-                                      packet.param2,
-                                      packet.param3,
-                                      packet.param4,
-                                      packet.param5,
-                                      packet.param6)) {
-                copter.log_picture();
-            }
-            result = MAV_RESULT_ACCEPTED;
-            break;
-#endif // CAMERA == ENABLED
         case MAV_CMD_DO_MOUNT_CONTROL:
-#if MOUNT == ENABLED
-            copter.camera_mount.control(packet.param1, packet.param2, packet.param3, (MAV_MOUNT_MODE) packet.param7);
-            result = MAV_RESULT_ACCEPTED;
-#endif
             break;
 
         case MAV_CMD_MISSION_START:
@@ -1836,30 +1788,6 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
         copter.fence.handle_msg(chan, msg);
         break;
 #endif // AC_FENCE == ENABLED
-
-#if CAMERA == ENABLED
-    //deprecated.  Use MAV_CMD_DO_DIGICAM_CONFIGURE
-    case MAVLINK_MSG_ID_DIGICAM_CONFIGURE:      // MAV ID: 202
-        break;
-
-    //deprecated.  Use MAV_CMD_DO_DIGICAM_CONTROL
-    case MAVLINK_MSG_ID_DIGICAM_CONTROL:
-        copter.camera.control_msg(msg);
-        copter.log_picture();
-        break;
-#endif // CAMERA == ENABLED
-
-#if MOUNT == ENABLED
-    //deprecated. Use MAV_CMD_DO_MOUNT_CONFIGURE
-    case MAVLINK_MSG_ID_MOUNT_CONFIGURE:        // MAV ID: 204
-        copter.camera_mount.configure_msg(msg);
-        break;
-    //deprecated. Use MAV_CMD_DO_MOUNT_CONTROL
-    case MAVLINK_MSG_ID_MOUNT_CONTROL:
-        copter.camera_mount.control_msg(msg);
-        break;
-#endif // MOUNT == ENABLED
-
     case MAVLINK_MSG_ID_TERRAIN_DATA:
     case MAVLINK_MSG_ID_TERRAIN_CHECK:
 #if AP_TERRAIN_AVAILABLE && AC_TERRAIN

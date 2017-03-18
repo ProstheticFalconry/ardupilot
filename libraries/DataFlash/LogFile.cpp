@@ -1977,25 +1977,6 @@ void DataFlash_Class::Log_Write_ESC(void)
 #endif // CONFIG_HAL_BOARD
 }
 
-// Write a AIRSPEED packet
-void DataFlash_Class::Log_Write_Airspeed(AP_Airspeed &airspeed)
-{
-    float temperature;
-    if (!airspeed.get_temperature(temperature)) {
-        temperature = 0;
-    }
-    struct log_AIRSPEED pkt = {
-        LOG_PACKET_HEADER_INIT(LOG_ARSP_MSG),
-        time_us       : AP_HAL::micros64(),
-        airspeed      : airspeed.get_raw_airspeed(),
-        diffpressure  : airspeed.get_differential_pressure(),
-        temperature   : (int16_t)(temperature * 100.0f),
-        rawpressure   : airspeed.get_corrected_pressure(),
-        offset        : airspeed.get_offset(),
-        use           : airspeed.use()
-    };
-    WriteBlock(&pkt, sizeof(pkt));
-}
 
 // Write a Yaw PID packet
 void DataFlash_Class::Log_Write_PID(uint8_t msg_type, const PID_Info &info)

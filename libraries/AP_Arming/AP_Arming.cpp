@@ -132,20 +132,6 @@ bool AP_Arming::barometer_checks(bool report)
 
 bool AP_Arming::airspeed_checks(bool report)
 {
-    if ((checks_to_perform & ARMING_CHECK_ALL) ||
-        (checks_to_perform & ARMING_CHECK_AIRSPEED)) {
-        const AP_Airspeed *airspeed = ahrs.get_airspeed();
-        if (airspeed == nullptr) {
-            // not an airspeed capable vehicle
-            return true;
-        }
-        if (airspeed->enabled() && airspeed->use() && !airspeed->healthy()) {
-            if (report) {
-                GCS_MAVLINK::send_statustext_all(MAV_SEVERITY_CRITICAL, "PreArm: Airspeed not healthy");
-            }
-            return false;
-        }
-    }
 
     return true;
 }

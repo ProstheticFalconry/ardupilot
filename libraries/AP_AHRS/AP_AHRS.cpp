@@ -132,20 +132,6 @@ const AP_Param::GroupInfo AP_AHRS::var_info[] = {
 // return airspeed estimate if available
 bool AP_AHRS::airspeed_estimate(float *airspeed_ret) const
 {
-    if (airspeed_sensor_enabled()) {
-        *airspeed_ret = _airspeed->get_airspeed();
-        if (_wind_max > 0 && _gps.status() >= AP_GPS::GPS_OK_FIX_2D) {
-            // constrain the airspeed by the ground speed
-            // and AHRS_WIND_MAX
-            float gnd_speed = _gps.ground_speed();
-            float true_airspeed = *airspeed_ret * get_EAS2TAS();
-            true_airspeed = constrain_float(true_airspeed,
-                                            gnd_speed - _wind_max,
-                                            gnd_speed + _wind_max);
-            *airspeed_ret = true_airspeed / get_EAS2TAS();
-        }
-        return true;
-    }
     return false;
 }
 

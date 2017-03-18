@@ -160,7 +160,7 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 void Copter::setup() 
 {
     cliSerial = hal.console;
-
+    hal.console->printf("\n\n\n hello world,setup is being run \n\n\n");
     // Load the default values of variables listed in var_info[]s
     AP_Param::setup_sketch_defaults();
 
@@ -170,11 +170,14 @@ void Copter::setup()
     init_ardupilot();
 
     // initialise the main loop scheduler
-    scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
+    //scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
 
     // setup initial performance counters
-    perf_info_reset();
-    fast_loopTimer = AP_HAL::micros();
+    //perf_info_reset();
+    //fast_loopTimer = AP_HAL::micros();
+     motor_test_internal_start(0,1000);
+     motor_test_output_internal();
+
 }
 
 /*
@@ -286,11 +289,6 @@ void Copter::fast_loop()
     // check if we've landed or crashed
     update_land_and_crash_detectors();
 
-#if MOUNT == ENABLED
-    // camera mount's fast update
-    camera_mount.update_fast();
-#endif
-
     // log sensor health
     if (should_log(MASK_LOG_ANY)) {
         Log_Sensor_Health();
@@ -333,24 +331,11 @@ void Copter::throttle_loop()
 // should be run at 50hz
 void Copter::update_mount()
 {
-#if MOUNT == ENABLED
-    // update camera mount's position
-    camera_mount.update();
-#endif
 }
 
 // update camera trigger
 void Copter::update_trigger(void)
 {
-#if CAMERA == ENABLED
-    camera.trigger_pic_cleanup();
-    if (camera.check_trigger_pin()) {
-        gcs_send_message(MSG_CAMERA_FEEDBACK);
-        if (should_log(MASK_LOG_CAMERA)) {
-            DataFlash.Log_Write_Camera(ahrs, gps, current_loc);
-        }
-    }    
-#endif
 }
 
 // update_batt_compass - read battery and compass
@@ -547,12 +532,6 @@ void Copter::update_GPS(void)
 
         // checks to initialise home and take location based pictures
         if (gps.status() >= AP_GPS::GPS_OK_FIX_3D) {
-
-#if CAMERA == ENABLED
-            if (camera.update_location(current_loc, copter.ahrs) == true) {
-                do_take_picture();
-            }
-#endif
         }
     }
 }

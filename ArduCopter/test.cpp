@@ -12,7 +12,6 @@ static const struct Menu::command test_menu_commands[] = {
 #endif
     {"compass",             MENU_FUNC(test_compass)},
     {"ins",                 MENU_FUNC(test_ins)},
-    {"optflow",             MENU_FUNC(test_optflow)},
     {"relay",               MENU_FUNC(test_relay)},
 #if CONFIG_HAL_BOARD == HAL_BOARD_PX4 || CONFIG_HAL_BOARD == HAL_BOARD_VRBRAIN
     {"shell", 				MENU_FUNC(test_shell)},
@@ -76,9 +75,6 @@ int8_t Copter::test_compass(uint8_t argc, const Menu::arg *argv)
     ahrs.init();
     ahrs.set_fly_forward(true);
     ahrs.set_compass(&compass);
-#if OPTFLOW == ENABLED
-    ahrs.set_optflow(&optflow);
-#endif
     report_compass();
 
     // we need the AHRS initialised for this test

@@ -55,8 +55,6 @@ public:
         yaw_sensor(0),
         _vehicle_class(AHRS_VEHICLE_UNKNOWN),
         _compass(nullptr),
-        _optflow(nullptr),
-        _airspeed(nullptr),
         _beacon(nullptr),
         _compass_last_update(0),
         _ins(ins),
@@ -129,14 +127,6 @@ public:
         return _compass;
     }
 
-    void set_optflow(const OpticalFlow *optflow) {
-        _optflow = optflow;
-    }
-
-    const OpticalFlow* get_optflow() const {
-        return _optflow;
-    }
-
     // allow for runtime change of orientation
     // this makes initial config easier
     void set_orientation() {
@@ -146,16 +136,8 @@ public:
         }
     }
 
-    void set_airspeed(AP_Airspeed *airspeed) {
-        _airspeed = airspeed;
-    }
-
     void set_beacon(AP_Beacon *beacon) {
         _beacon = beacon;
-    }
-
-    const AP_Airspeed *get_airspeed(void) const {
-        return _airspeed;
     }
 
     const AP_Beacon *get_beacon(void) const {
@@ -278,16 +260,13 @@ public:
 
     // get apparent to true airspeed ratio
     float get_EAS2TAS(void) const {
-        if (_airspeed) {
-            return _airspeed->get_EAS2TAS();
-        }
         return 1.0f;
     }
 
     // return true if airspeed comes from an airspeed sensor, as
     // opposed to an IMU estimate
     bool airspeed_sensor_enabled(void) const {
-        return _airspeed != nullptr && _airspeed->use() && _airspeed->healthy();
+        return 0;
     }
 
     // return a ground vector estimate in meters/second, in North/East order
@@ -533,12 +512,6 @@ protected:
 
     // pointer to compass object, if available
     Compass         * _compass;
-
-    // pointer to OpticalFlow object, if available
-    const OpticalFlow *_optflow;
-
-    // pointer to airspeed object, if available
-    AP_Airspeed     * _airspeed;
 
     // pointer to beacon object, if available
     AP_Beacon     * _beacon;

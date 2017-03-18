@@ -297,11 +297,6 @@ void Copter::do_aux_switch_function(int8_t ch_function, uint8_t ch_flag)
             break;
 
         case AUXSW_CAMERA_TRIGGER:
-#if CAMERA == ENABLED
-            if (ch_flag == AUX_SWITCH_HIGH) {
-                do_take_picture();
-            }
-#endif
             break;
 
         case AUXSW_RANGEFINDER:
@@ -461,16 +456,6 @@ void Copter::do_aux_switch_function(int8_t ch_function, uint8_t ch_flag)
             break;
 
         case AUXSW_RETRACT_MOUNT:
-#if MOUNT == ENABLE
-            switch (ch_flag) {
-                case AUX_SWITCH_HIGH:
-                    camera_mount.set_mode(MAV_MOUNT_MODE_RETRACT);
-                    break;
-                case AUX_SWITCH_LOW:
-                    camera_mount.set_mode_to_default();
-                    break;
-            }
-#endif
             break;
 
         case AUXSW_RELAY:
