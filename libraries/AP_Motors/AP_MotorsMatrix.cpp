@@ -303,12 +303,12 @@ void AP_MotorsMatrix::output_test(uint8_t motor_seq, int16_t pwm)
 
     // loop through all the possible orders spinning any motors that match that description
     hal.rcout->cork();
-    for (uint8_t i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
-        if (motor_enabled[i] && _test_order[i] == motor_seq) {
+   // for (uint8_t i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
+     //   if (motor_enabled[i] && _test_order[i] == motor_seq) {
             // turn on this motor
-            rc_write(i, pwm);
-        }
-    }
+            rc_write(motor_seq, pwm);
+       // }
+    //}
     hal.rcout->push();
 }
 

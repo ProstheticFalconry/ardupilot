@@ -137,11 +137,11 @@ bool Copter::init_arm_motors(bool arming_from_gcs)
     }
 
     // run pre-arm-checks and display failures
-    if (!arming.all_checks_passing(arming_from_gcs)) {
+/*    if (!arming.all_checks_passing(arming_from_gcs)) {
         AP_Notify::events.arming_failed = true;
         in_arm_motors = false;
         return false;
-    }
+    }*/
 
     // let dataflash know that we're armed (it may open logs e.g.)
     DataFlash_Class::instance()->set_vehicle_armed(true);

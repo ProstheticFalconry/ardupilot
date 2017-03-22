@@ -73,6 +73,7 @@
  */
 
 #include "Copter.h"
+#include <stdio.h>
 
 #define SCHED_TASK(func, rate_hz, max_time_micros) SCHED_TASK_CLASS(Copter, &copter, func, rate_hz, max_time_micros)
 
@@ -82,7 +83,7 @@
   and the maximum time they are expected to take (in microseconds)
  */
 const AP_Scheduler::Task Copter::scheduler_tasks[] = {
-    SCHED_TASK(rc_loop,              100,    130),
+//    SCHED_TASK(rc_loop,              100,    130),
     SCHED_TASK(throttle_loop,         50,     75),
     SCHED_TASK(update_GPS,            50,    200),
 #if OPTFLOW == ENABLED
@@ -97,7 +98,7 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
     SCHED_TASK(update_proximity,     100,     50),
     SCHED_TASK(update_beacon,        400,     50),
     SCHED_TASK(update_altitude,       10,    100),
-    SCHED_TASK(run_nav_updates,       50,    100),
+//    SCHED_TASK(run_nav_updates,       50,    100),
     SCHED_TASK(update_throttle_hover,100,     90),
     SCHED_TASK(three_hz_loop,          3,     75),
     SCHED_TASK(compass_accumulate,   100,    100),
@@ -160,23 +161,25 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 void Copter::setup() 
 {
     cliSerial = hal.console;
-    hal.console->printf("\n\n\n hello world,setup is being run \n\n\n");
     // Load the default values of variables listed in var_info[]s
     AP_Param::setup_sketch_defaults();
-
     // setup storage layout for copter
     StorageManager::set_layout_copter();
-
+     
     init_ardupilot();
+    // initialise the main loop schedu
 
-    // initialise the main loop scheduler
-    //scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
-
+    scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
+    
     // setup initial performance counters
-    //perf_info_reset();
-    //fast_loopTimer = AP_HAL::micros();
-     motor_test_internal_start(1,1000);
-     motor_test_output_internal();
+    perf_info_reset();
+    fast_loopTimer = AP_HAL::micros();
+    init_rc_out();
+    if(init_arm_motors(false)){
+	printf("\n\n\nMotors armed and enabled sucessfully\n\n\n");
+    } else {
+	printf("\n\n\nMotors not armed\n\n\n");
+    }
 
 }
 
@@ -349,6 +352,7 @@ void Copter::update_batt_compass(void)
         // update compass with throttle value - used for compassmot
         compass.set_throttle(motors->get_throttle());
         compass.read();
+	printf("X:%f Y:%f Z:%f\n",compass.get_field()[0],compass.get_field()[1],compass.get_field()[2]);
         // log compass information
         if (should_log(MASK_LOG_COMPASS) && !ahrs.have_ekf_logging()) {
             DataFlash.Log_Write_Compass(compass);

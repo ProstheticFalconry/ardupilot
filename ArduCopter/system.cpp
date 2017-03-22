@@ -1,6 +1,6 @@
 #include "Copter.h"
 #include "version.h"
-
+#include <stdio.h>
 /*****************************************************************************
 *   The init_ardupilot function processes everything we need for an in - air restart
 *        We will determine later if we are actually on the ground and process a
@@ -81,6 +81,7 @@ static void failsafe_check_static()
 
 void Copter::init_ardupilot()
 {
+    printf("Starting init ardupilot function\n");
     if (!hal.gpio->usb_connected()) {
         // USB is not connected, this means UART0 may be a Xbee, with
         // its darned bricking problem. We can't write to it for at

@@ -1,5 +1,5 @@
 #include "Copter.h"
-
+#include <stdio.h>
 /*
   mavlink motor test - implements the MAV_CMD_DO_MOTOR_TEST mavlink command so that the GCS/pilot can test an individual motor or flaps
                        to ensure proper wiring, rotation.
@@ -17,32 +17,34 @@ static uint16_t motor_test_internal_throttle_value = 0;  // throttle to be sent 
 // motor_test_output - checks for timeout and sends updates to motors objects
 void Copter::motor_test_output_internal()
 {
-    if(!ap.motor_test)
+    printf("Setting motors, motor test is %d\n",ap.motor_test_internal);
+    if(!ap.motor_test_internal)
 	return;
 	
     // check for test timeout
-    if ((AP_HAL::millis() - motor_test_start_internal_ms) >= motor_test_timeout_internal_ms) {
+//    if ((AP_HAL::millis() - motor_test_start_internal_ms) >= motor_test_timeout_internal_ms) {
         // stop motor test
-        motor_test_internal_stop();
-    } else {
+      //  motor_test_internal_stop();
+    //} else {
         // sanity check throttle values
         if (motor_test_internal_throttle_value >= MOTOR_TEST_PWM_MIN && motor_test_internal_throttle_value <= MOTOR_TEST_PWM_MAX ) {
-            // turn on motor to specified pwm vlaue
+            printf("\nsetting motors to %d\n",motor_test_internal_throttle_value);
             motors->output_test(motor_test_internal_seq, motor_test_internal_throttle_value);
         } else {
-            motor_test_internal_stop();
+//            motor_test_internal_stop();
         }
-    }
+    //}
 }
 
 uint8_t Copter::motor_test_internal_start(uint8_t mot_seq, uint32_t mot_throt)
 {
     // if test has not started try to start it
-    if (!ap.motor_test) {
+    printf("initializing motor test. test value is %d\n",ap.motor_test_internal);
+    if (!ap.motor_test_internal) {
         
             // start test
-            ap.motor_test = true;
-
+            ap.motor_test_internal = true;
+	    printf("in motor test init. test value is %d\n",ap.motor_test_internal);
             // enable and arm motors
             if (!motors->armed()) {
                 init_rc_out();
@@ -69,12 +71,12 @@ uint8_t Copter::motor_test_internal_start(uint8_t mot_seq, uint32_t mot_throt)
 void Copter::motor_test_internal_stop()
 {
     // exit immediately if the test is not running
-    if (!ap.motor_test) {
+    if (!ap.motor_test_internal) {
         return;
     }
 
     // flag test is complete
-    ap.motor_test = false;
+    ap.motor_test_internal = false;
 
     // disarm motors
     motors->armed(false);
