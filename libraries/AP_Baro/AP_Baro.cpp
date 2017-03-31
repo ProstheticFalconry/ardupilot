@@ -99,11 +99,8 @@ void AP_Baro::calibrate()
     // offset is supposed to be for within a flight
     _alt_offset.set_and_save(0);
 
-    printf("num_sensors = %d\n", _num_sensors);
-
     // start by assuming all sensors are calibrated (for healthy() test)
     for (uint8_t i=0; i<_num_sensors; i++) {
-        printf("Set sensors[%d].calibrated to true\n", i);
 	sensors[i].calibrated = true;
         sensors[i].alt_ok = true;
     }
@@ -153,10 +150,8 @@ void AP_Baro::calibrate()
 
     for (uint8_t i=0; i<_num_sensors; i++) {
         if (count[i] == 0) {
-	    printf("Executed the 'if' in baro.calibrate\n");
             sensors[i].calibrated = false;
         } else {
-	    printf("Executed the 'else' in baro.calibrate\n");
             sensors[i].ground_pressure.set_and_save(0);
 	    sensors[i].ground_temperature.set_and_save(0);
 	    //sensors[i].ground_pressure.set_and_save(sum_pressure[i] / count[i]);
@@ -166,9 +161,7 @@ void AP_Baro::calibrate()
 
     // panic if all sensors are not calibrated
     for (uint8_t i=0; i<_num_sensors; i++) {
-	printf("Check if calibrated %d\n", i);
         if (sensors[i].calibrated) {
-	    printf("sensor %d is calibrated\n", i);
             return;
         }
     }
@@ -270,7 +263,9 @@ float AP_Baro::get_climb_rate(void)
     }
     // we use a 7 point derivative filter on the climb rate. This seems
     // to produce somewhat reasonable results on real hardware
-    return _climb_rate_filter.slope() * 1.0e3f;
+    float climb_rate = _climb_rate_filter.slope() * 1.0e3f;
+    printf("climb rate slope = %f\n", climb_rate);
+    return climb_rate;
 }
 
 

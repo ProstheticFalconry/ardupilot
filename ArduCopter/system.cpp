@@ -81,7 +81,6 @@ static void failsafe_check_static()
 
 void Copter::init_ardupilot()
 {
-    printf("Starting init ardupilot function\n");
     if (!hal.gpio->usb_connected()) {
         // USB is not connected, this means UART0 may be a Xbee, with
         // its darned bricking problem. We can't write to it for at
@@ -255,20 +254,16 @@ void Copter::init_ardupilot()
     ins.set_hil_mode();
 #endif
    
-    printf("\nIn ardupilot_init (1)\n");
     // read Baro pressure at ground
     //-----------------------------
     init_barometer(true);
-    printf("\nIn ardupilot_init (2)\n");
     // initialise rangefinder
     init_rangefinder();
-    printf("\nIn ardupilot_init (3)\n");
     // init proximity sensor
     init_proximity();
 
     // init beacons used for non-gps position estimation
     init_beacon();
-    printf("\nIn ardupilot_init (4)\n");
     // initialise AP_RPM library
     rpm_sensor.init();
 

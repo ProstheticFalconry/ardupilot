@@ -48,6 +48,5 @@ float AP_Baro_Ultrasound::get_altitude(void)
 {
 	float dt = (float) get_timer_diff();
 	float dist = dt * SPEED_OF_SOUND / (2 * CYCLES_PER_SEC);
-	printf("get_altitude returned: %.2f cm\n", 100*dist);
-	return 100*dist;
+	return dist;
 }
