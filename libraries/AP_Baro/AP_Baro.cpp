@@ -18,7 +18,7 @@
  *
  */
 #include "AP_Baro.h"
-
+#include <stdio.h>
 #include <utility>
 
 #include <AP_Common/AP_Common.h>
@@ -101,7 +101,7 @@ void AP_Baro::calibrate()
 
     // start by assuming all sensors are calibrated (for healthy() test)
     for (uint8_t i=0; i<_num_sensors; i++) {
-        sensors[i].calibrated = true;
+	sensors[i].calibrated = true;
         sensors[i].alt_ok = true;
     }
 
@@ -112,7 +112,7 @@ void AP_Baro::calibrate()
         uint32_t tstart = AP_HAL::millis();
         do {
             update();
-            if (AP_HAL::millis() - tstart > 500) {
+            if (AP_HAL::millis() - tstart > 100) {
                 AP_HAL::panic("PANIC: AP_Baro::read unsuccessful "
                         "for more than 500ms in AP_Baro::calibrate [2]\r\n");
             }
@@ -128,6 +128,7 @@ void AP_Baro::calibrate()
     uint8_t count[BARO_MAX_INSTANCES] = {0};
     const uint8_t num_samples = 5;
 
+    
     for (uint8_t c = 0; c < num_samples; c++) {
         uint32_t tstart = AP_HAL::millis();
         do {
@@ -139,19 +140,22 @@ void AP_Baro::calibrate()
         } while (!healthy());
         for (uint8_t i=0; i<_num_sensors; i++) {
             if (healthy(i)) {
-                sum_pressure[i] += sensors[i].pressure;
-                sum_temperature[i] += sensors[i].temperature;
+                //sum_pressure[i] += sensors[i].pressure;
+                //sum_temperature[i] += sensors[i].temperature;
                 count[i] += 1;
             }
         }
         hal.scheduler->delay(100);
     }
+
     for (uint8_t i=0; i<_num_sensors; i++) {
         if (count[i] == 0) {
             sensors[i].calibrated = false;
         } else {
-            sensors[i].ground_pressure.set_and_save(sum_pressure[i] / count[i]);
-            sensors[i].ground_temperature.set_and_save(sum_temperature[i] / count[i]);
+            sensors[i].ground_pressure.set_and_save(0);
+	    sensors[i].ground_temperature.set_and_save(0);
+	    //sensors[i].ground_pressure.set_and_save(sum_pressure[i] / count[i]);
+            //sensors[i].ground_temperature.set_and_save(sum_temperature[i] / count[i]);
         }
     }
 
@@ -171,6 +175,7 @@ void AP_Baro::calibrate()
 */
 void AP_Baro::update_calibration()
 {
+/*
     for (uint8_t i=0; i<_num_sensors; i++) {
         if (healthy(i)) {
             sensors[i].ground_pressure.set(get_pressure(i));
@@ -191,12 +196,18 @@ void AP_Baro::update_calibration()
             _EAS2TAS = 0;
         }
     }
+*/
 }
 
 // return altitude difference in meters between current pressure and a
 // given base_pressure in Pascal
 float AP_Baro::get_altitude_difference(float base_pressure, float pressure) const
 {
+   float ret; 
+   #if HAL_BARO_DEFAULT==HAL_BARO_ULTRASOUND
+	ret = pressure - base_pressure;
+    #else
+
     float ret;
     float temp    = get_ground_temperature() + 273.15f;
     float scaling = pressure / base_pressure;
@@ -204,7 +215,9 @@ float AP_Baro::get_altitude_difference(float base_pressure, float pressure) cons
     // This is an exact calculation that is within +-2.5m of the standard
     // atmosphere tables in the troposphere (up to 11,000 m amsl).
     ret = 153.8462f * temp * (1.0f - expf(0.190259f * logf(scaling)));
-
+    
+    #endif
+    
     return ret;
 }
 
@@ -214,6 +227,7 @@ float AP_Baro::get_altitude_difference(float base_pressure, float pressure) cons
 // assumes standard atmosphere lapse rate
 float AP_Baro::get_EAS2TAS(void)
 {
+/*
     float altitude = get_altitude();
     if ((fabsf(altitude - _last_altitude_EAS2TAS) < 100.0f) && !is_zero(_EAS2TAS)) {
         // not enough change to require re-calculating
@@ -224,6 +238,8 @@ float AP_Baro::get_EAS2TAS(void)
     _EAS2TAS = safe_sqrt(1.225f / ((float)get_pressure() / (287.26f * tempK)));
     _last_altitude_EAS2TAS = altitude;
     return _EAS2TAS;
+*/
+    return 0.0;
 }
 
 // return air density / sea level density - decreases as altitude climbs
@@ -247,7 +263,9 @@ float AP_Baro::get_climb_rate(void)
     }
     // we use a 7 point derivative filter on the climb rate. This seems
     // to produce somewhat reasonable results on real hardware
-    return _climb_rate_filter.slope() * 1.0e3f;
+    float climb_rate = _climb_rate_filter.slope() * 1.0e3f;
+    printf("climb rate slope = %f\n", climb_rate);
+    return climb_rate;
 }
 
 
@@ -351,14 +369,14 @@ void AP_Baro::update(void)
         if (sensors[i].healthy) {
             // update altitude calculation
             float ground_pressure = sensors[i].ground_pressure;
-            if (is_zero(ground_pressure) || isnan(ground_pressure) || isinf(ground_pressure)) {
+            if (isnan(ground_pressure) || isinf(ground_pressure)) {
                 sensors[i].ground_pressure = sensors[i].pressure;
             }
             float altitude = get_altitude_difference(sensors[i].ground_pressure, sensors[i].pressure);
             // sanity check altitude
             sensors[i].alt_ok = !(isnan(altitude) || isinf(altitude));
             if (sensors[i].alt_ok) {
-                sensors[i].altitude = altitude + _alt_offset_active;
+                sensors[i].altitude = altitude;
             }
         }
         if (_hil.have_alt) {

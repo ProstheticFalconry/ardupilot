@@ -81,7 +81,6 @@ static void failsafe_check_static()
 
 void Copter::init_ardupilot()
 {
-    printf("Starting init ardupilot function\n");
     if (!hal.gpio->usb_connected()) {
         // USB is not connected, this means UART0 may be a Xbee, with
         // its darned bricking problem. We can't write to it for at
@@ -105,7 +104,6 @@ void Copter::init_ardupilot()
     // Report firmware version code expect on console (check of actual EEPROM format version is done in load_parameters function)
     //
     report_version();
-
     // load parameters from EEPROM
     load_parameters();
 
@@ -176,7 +174,6 @@ void Copter::init_ardupilot()
     // trad heli specific initialisation
     heli_init();
 #endif
-    
     init_rc_in();               // sets up rc channels from radio
 
     // default frame class to match firmware if possible
@@ -189,24 +186,24 @@ void Copter::init_ardupilot()
 
     // initialise which outputs Servo and Relay events can use
     ServoRelayEvents.set_channel_mask(~motors->get_motor_mask());
-
+ 
     relay.init();
 
     /*
      *  setup the 'main loop is dead' check. Note that this relies on
      *  the RC library being initialised.
      */
+
     hal.scheduler->register_timer_failsafe(failsafe_check_static, 1000);
 
     // give AHRS the rnage beacon sensor
     ahrs.set_beacon(&g2.beacon);
-
     // Do GPS init
     gps.init(&DataFlash, serial_manager);
-
+    
     if(g.compass_enabled)
         init_compass();
-
+    
     // init Location class
     Location_Class::set_ahrs(&ahrs);
 #if AP_TERRAIN_AVAILABLE && AC_TERRAIN
@@ -256,20 +253,17 @@ void Copter::init_ardupilot()
     // set INS to HIL mode
     ins.set_hil_mode();
 #endif
-
+   
     // read Baro pressure at ground
     //-----------------------------
     init_barometer(true);
-
     // initialise rangefinder
     init_rangefinder();
-
     // init proximity sensor
     init_proximity();
 
     // init beacons used for non-gps position estimation
     init_beacon();
-
     // initialise AP_RPM library
     rpm_sensor.init();
 

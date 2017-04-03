@@ -97,12 +97,12 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
     SCHED_TASK(read_rangefinder,      20,    100),
     SCHED_TASK(update_proximity,     100,     50),
     SCHED_TASK(update_beacon,        400,     50),
-    SCHED_TASK(update_altitude,       10,    100),
+    SCHED_TASK(update_altitude,       5,    100),
 //    SCHED_TASK(run_nav_updates,       50,    100),
     SCHED_TASK(update_throttle_hover,100,     90),
     SCHED_TASK(three_hz_loop,          3,     75),
     SCHED_TASK(compass_accumulate,   100,    100),
-    SCHED_TASK(barometer_accumulate,  50,     90),
+    SCHED_TASK(barometer_accumulate,  5,     90),
 #if PRECISION_LANDING == ENABLED
     SCHED_TASK(update_precland,      400,     50),
 #endif
@@ -168,7 +168,7 @@ void Copter::setup()
      
     init_ardupilot();
     // initialise the main loop schedu
-
+    printf("\nAfter init_ardupilot()\n");
     scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
     
     // setup initial performance counters
@@ -202,7 +202,7 @@ void Copter::compass_accumulate(void)
  */
 void Copter::barometer_accumulate(void)
 {
-    barometer.accumulate();
+    printf("Barometer Altitude: %.2f\n\n", barometer.get_altitude());
 }
 
 void Copter::perf_update(void)

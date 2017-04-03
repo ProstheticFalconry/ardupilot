@@ -17,8 +17,16 @@
  *       RC_Channels.cpp - class containing an array of RC_Channel objects
  *
  */
+#define FILE_LOCATION "/home/ubuntu/fly0.txt"
+#define MAX_READ_CHARS 10
+
+#define RC_CONTROLLED 0
+#define NOT_RC_CONTROLLED 1
+
+#define CONTROL_METHOD NOT_RC_CONRTOLLED
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <cmath>
 
 #include <AP_HAL/AP_HAL.h>
@@ -118,10 +126,10 @@ RC_Channels::RC_Channels(void)
 /*
   call read() and set_pwm() on all channels
  */
-void
-RC_Channels::set_pwm_all(void)
+void RC_Channels::set_pwm_all(void)
 {
-    for (uint8_t i=0; i<NUM_RC_CHANNELS; i++) {
-        channels[i].set_pwm(channels[i].read());
+    for (uint8_t k=0; k<NUM_RC_CHANNELS; k++) {
+        channels[k].set_pwm(channels[k].read());
     }
+    printf("channel[0] is %d\n", channels[0].read());
 }
