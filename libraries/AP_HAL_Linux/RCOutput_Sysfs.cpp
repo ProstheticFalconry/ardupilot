@@ -173,7 +173,7 @@ void RCOutput_Sysfs::init_channel(PWM_Sysfs_Base *pwm_chan){
         pwm_chan->enable(false);
 
         /* Set the initial frequency */
-        pwm_chan->set_freq(50);
+        pwm_chan->set_freq(500);
         pwm_chan->set_duty_cycle(0);
         pwm_chan->set_polarity(PWM_Sysfs::Polarity::NORMAL);
 }

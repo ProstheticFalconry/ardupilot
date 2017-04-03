@@ -20,7 +20,7 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
     if (mode == control_mode) {
         prev_control_mode = control_mode;
         prev_control_mode_reason = control_mode_reason;
-
+	printf("set_mode returned out");
         control_mode_reason = reason;
         return true;
     }
@@ -35,9 +35,11 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
             break;
 
         case STABILIZE:
+	    printf("\n\nin stabilize case statement\n\n");
             #if FRAME_CONFIG == HELI_FRAME
                 success = heli_stabilize_init(ignore_checks);
             #else
+		printf("\n\nstabilize mode has been initialized\n\n");
                 success = stabilize_init(ignore_checks);
             #endif
             break;
@@ -111,6 +113,7 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
             break;
 
         default:
+	    printf("set mode defaulted");
             success = false;
             break;
     }
@@ -176,6 +179,7 @@ void Copter::update_flight_mode()
                 heli_stabilize_run();
             #else
                 stabilize_run();
+		
             #endif
             break;
 

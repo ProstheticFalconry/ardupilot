@@ -174,12 +174,16 @@ void Copter::setup()
     // setup initial performance counters
     perf_info_reset();
     fast_loopTimer = AP_HAL::micros();
+    g.failsafe_throttle = FS_THR_DISABLED;
+    g.failsafe_battery_enabled = FS_BATT_DISABLED;
+    g.failsafe_gcs = FS_GCS_DISABLED;
     init_rc_out();
     if(init_arm_motors(false)){
 	printf("\n\n\nMotors armed and enabled sucessfully\n\n\n");
     } else {
 	printf("\n\n\nMotors not armed\n\n\n");
     }
+    set_mode(STABILIZE, MODE_REASON_UNKNOWN);
 
 }
 

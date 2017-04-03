@@ -21,7 +21,7 @@
 
 #include "AP_MotorsMulticopter.h"
 #include <AP_HAL/AP_HAL.h>
-
+#include <stdio.h>
 extern const AP_HAL::HAL& hal;
 
 // parameters for the motor class
@@ -598,11 +598,14 @@ void AP_MotorsMulticopter::output_motor_mask(float thrust, uint8_t mask)
             int16_t motor_out;
             if (mask & (1U<<i)) {
                 motor_out = calc_thrust_to_pwm(thrust);
+		printf("AP_MotorsMulticopeter: sending thrust output for motor %d\n",i);
             } else {
                 motor_out = get_pwm_output_min();
+		printf("AP_MotorsMulticopter: sending minimum output for motor %d\n",i);
             }
             rc_write(i, motor_out);
         }
+	printf("AP_MotorsMulticopter: Motor %d disabled\n",i);
     }
     hal.rcout->push();
 }

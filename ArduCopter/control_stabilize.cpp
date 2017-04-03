@@ -7,6 +7,7 @@
 // stabilize_init - initialise stabilize controller
 bool Copter::stabilize_init(bool ignore_checks)
 {
+    printf("\n\n\n*****stabilize initialized****\n\n\n");
     // if landed and the mode we're switching from does not have manual throttle and the throttle stick is too high
     if (!ignore_checks && motors->armed() && ap.land_complete && !mode_has_manual_throttle(control_mode) &&
             (get_pilot_desired_throttle(channel_throttle->get_control_in()) > get_non_takeoff_throttle())) {
@@ -49,7 +50,7 @@ void Copter::stabilize_run()
     //target_yaw_rate = get_pilot_desired_yaw_rate(channel_yaw->get_control_in());
 
     // get pilot's desired throttle
-    pilot_throttle_scaled = get_pilot_desired_throttle(0);
+    pilot_throttle_scaled = 0.5f;
 
     // call attitude controller
     attitude_control->input_euler_angle_roll_pitch_euler_rate_yaw(0, 0, 0, get_smoothing_gain());

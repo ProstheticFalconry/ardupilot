@@ -126,6 +126,7 @@ bool Copter::init_arm_motors(bool arming_from_gcs)
 
     // exit immediately if already in this function
     if (in_arm_motors) {
+	printf("motors.cpp: exit because we're already in init_arm_motors\n");
         return false;
     }
     in_arm_motors = true;
@@ -133,6 +134,7 @@ bool Copter::init_arm_motors(bool arming_from_gcs)
     // return true if already armed
     if (motors->armed()) {
         in_arm_motors = false;
+	printf("motors.cpp: exit because the motors are already armed");
         return true;
     }
 
