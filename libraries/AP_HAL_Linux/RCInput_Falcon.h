@@ -7,16 +7,20 @@
 
 #define CHANNELS 5
 #define MAX_ROWS 6
-#define MAX_ROW_LENGTH 11
-#define MAX_FILE_SIZE 66
+#define MAX_FILE_SIZE 11
+
+// RCInput Channel Offets
+#define ROLL_OFFSET 0
+#define PITCH_OFFSET 1
+#define THROT_OFFSET 2
+#define YAW_OFFSET 3
 
 // RCInput Modes
-#define FLY0_MN 0
-#define THROT_MN 1
-#define ROLL_MN 2
-#define PITCH_MN 3
-#define YAW_MN 4
-#define MODE_MN 5 
+#define THROT_MN 39
+#define ROLL_MN 40
+#define PITCH_MN 41
+#define YAW_MN 42
+#define MODE_MN 43
 
 // RCOutput Modes
 #define COMPASS_ID 0
@@ -26,11 +30,11 @@
 
 namespace Linux {
 
-class RCInput_UART : public RCInput
+class RCInput_Falcon : public RCInput
 {
 public:
-    RCInput_UART(const char *path);
-    ~RCInput_UART();
+    RCInput_Falcon(const char *path);
+    ~RCInput_Falcon();
 
     void init() override;
     void _timer_tick(void) override;
@@ -40,12 +44,14 @@ public:
 private:
     int _fd;
     int err;
-    void * buffer;
-    int mode;
+    int length;
+    char * buffer;
+    int change_mode;
     char firstLetter;
+    uint16_t RC_value;
     uint16_t data_values[CHANNELS];
 
-    int a2i(int start, int length);
+    uint16_t a2i(int start, int length);
 };
 
 }

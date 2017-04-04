@@ -16,36 +16,38 @@ using namespace Linux;
 
 RCInput_Falcon::RCInput_Falcon(const char *path)
 {
-    _fd = open(path, O_TEXT);
+    _fd = open(path, O_RDWR);
     if (_fd < 0) {
-        AP_HAL::panic("RCInput_Falcon: Error opening '%s': %s",
-                             path, strerror(errno));
+        AP_HAL::panic("RCInput_Falcon: Error opening '%s': %s", path, strerror(errno));
     }
 }
 
-RCInput_Falcon::~RCInput_UART()
+RCInput_Falcon::~RCInput_Falcon(void)
 {
     close(_fd);
 }
 
 void RCInput_Falcon::init()
 {
-	
+    for (int i = 0 ; i < CHANNELS - 1 ; i++) {
+	data_values[i] = 860;
+    }
+    data_values[CHANNELS - 1] = 0;
 }
 
 void RCInput_Falcon::_record_altitude(float alt)
 {
     // copy string of altitude into tmp_buf
     char * tmp_buf;
-    tmp_buf = (char *) malloc(MAX_ROW_LENGTH);
+    tmp_buf = (char *) malloc(MAX_FILE_SIZE);
     sprintf(tmp_buf, "%10.2f", alt);
 
     // shift string 1 to right and replace first byte with ID
-    for (int i = 0; i < MAX_ROW_LENGTH - 1; i++) {
-	tmp_buf[MAX_ROW_LENGTH-1-i] = tmp_buf[MAX_ROW_LENGTH-2-i]
+    for (int i = 0; i < MAX_FILE_SIZE - 1; i++) {
+	tmp_buf[MAX_FILE_SIZE-1-i] = tmp_buf[MAX_FILE_SIZE-2-i];
     }
     tmp_buf[0] = (char) ALTITUDE_ID;
-    int err = write(_fd, (void *)tmp_buf, MAX_ROW_LENGTH);
+    int err = write(_fd, (void *)tmp_buf, MAX_FILE_SIZE);
     free(tmp_buf);
     if (err == -1) {
 	AP_HAL::panic("RCInput_Falcon: Error writing in _record_altitude");
@@ -54,59 +56,64 @@ void RCInput_Falcon::_record_altitude(float alt)
 
 void RCInput_Falcon::_timer_tick()
 {
-    buffer = malloc(MAX_FILE_SIZE+1);
-    err = read(_fd, buffer, sizeof(buffer));
+    buffer = (char *) malloc(MAX_FILE_SIZE+1);
+    err = ::read(_fd, buffer, sizeof(buffer));
 
     if (err == -1) {
 	free(buffer);
         AP_HAL::panic("RCInput_Falcon: Error reading in _timer_tick()");
     }
-    int index = 0;
-    int start;
-    for (int row = 0 ; row < MAX_ROWS ; row++) {
-	firstLetter = buffer[index];
-	switch (firstLetter) {
-	    case FLY0_MN:
-		break;
-	    case THROT_MN:
-		break;
-	    case ROLL_MN:
-		break;
-	    case PITCH_MN:
-		break;
-	    case YAW_MN:
-		break;
-	    case MODE_MN:
-		break;
-	    default:
-		AP_HAL::panic("RCInput_Falcon: Error reading firstLetter");
-		break;
+    
+    firstLetter = buffer[0];
+    int row = -1;
+    change_mode = 0;
+    switch (firstLetter) {
+	case ROLL_MN:
+	    row = ROLL_OFFSET;
+	    break;
+	case PITCH_MN:
+	    row = PITCH_OFFSET;
+	    break;
+	case THROT_MN:
+	    row = THROT_OFFSET;
+	    break;
+	case YAW_MN:
+	    row = YAW_OFFSET;
+	    break;
+	case MODE_MN:
+	    change_mode = 1;
+	    break;
+	default:
+	    printf("RCInput_Falcon: Not a recognized firstLetter %u",row);
+	    free(buffer);
+	    return;
 	}
-	index++;
-        start = index;
-
-	while (buffer[index] != 0){
-	    index++; // Count how long the row is
+	length = 1;
+	while (buffer[length] != 0){
+	    length++; // Count how long the row is
 	}
-	data_values[row] = a2i(start, index - start);
-	index++; // step to start of next row
+	RC_value = a2i(1, length);
+    if (change_mode == 1) {
+	_update_flight_mode(RC_value);
+    } else {
+	data_values[row] = RC_value;
+	_update_periods(data_values, (uint8_t) CHANNELS);
+    
     }
-
-    _update_periods(data_values, (uint8_t) CHANNELS);
     free(buffer);
 
 }
 
-int RCInput_Falcon::a2i(int start, int length)
+uint16_t RCInput_Falcon::a2i(int start, int len)
 {
-    char * tmp_buff = (char *) malloc(length);
+    char * tmp_buff = (char *) malloc(len);
     int tmp_num;
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < len; i++) {
 	tmp_buff[i] = (char) buffer[start+i];	    
     }
     tmp_num = atoi(tmp_buff);
     free(tmp_buff);
-    return tmp_num;
+    return (uint16_t) tmp_num;
 
 }
 

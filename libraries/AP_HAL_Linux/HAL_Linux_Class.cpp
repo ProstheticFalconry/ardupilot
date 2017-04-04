@@ -147,7 +147,7 @@ static RCInput_Multi rcinDriver{2, new RCInput_SBUS, new RCInput_115200("/dev/ua
 static RCInput_SBUS rcinDriver;
 #elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_NAVIO2
 static RCInput_Navio2 rcinDriver;
-#elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_UNKNOWN
+#elif CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_NONE
 static RCInput_Falcon rcinDriver("/dev/fly/fly0");
 #else
 static RCInput rcinDriver;
@@ -157,7 +157,7 @@ static RCInput rcinDriver;
   use the PRU based RCOutput driver on ERLE and PXF
  */
 //static RCOutput_PRU rcoutDriver;
-static uint8_t chipList[3]={0,2,4};
+static uint8_t chipList[3]={2,4,0};
 static RCOutput_Sysfs rcoutDriver(chipList,3, 0, 2);
 
 static Scheduler schedulerInstance;

@@ -354,6 +354,15 @@ void RCInput::_update_periods(uint16_t *periods, uint8_t len)
     rc_input_count++;
 }
 
+void RCInput::_update_flight_mode(uint16_t mode)
+{
+    if (mode == new_flight_mode) return;
+    else new_flight_mode = mode;
+}
+
+uint16_t RCInput::read_flight_mode() {
+    return new_flight_mode;
+}
 
 /*
   add some bytes of input in DSM serial stream format, coping with partial packets
