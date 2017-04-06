@@ -28,6 +28,7 @@ RCOutput_Sysfs::RCOutput_Sysfs(uint8_t chip, uint8_t channel_base, uint8_t chann
     , _chip_count(0)
     , _channel_base(channel_base)
     , _channel_count(channel_count)
+    , _channel_count_per_chip(0)
     , _pwm_channels(new PWM_Sysfs_Base *[_channel_count])
     , _pending(new uint16_t[_channel_count])
     , _multichip(false)
@@ -39,7 +40,8 @@ RCOutput_Sysfs::RCOutput_Sysfs(uint8_t *chip_list, uint8_t chip_count, uint8_t c
     , _chip(0)
     , _chip_count(chip_count)
     , _channel_base(channel_base)
-    , _channel_count(channel_count_per_chip)
+    , _channel_count_per_chip(channel_count_per_chip)
+    , _channel_count(channel_count_per_chip*chip_count)
     , _pwm_channels(new PWM_Sysfs_Base *[_chip_count*_channel_count])
     , _pending(new uint16_t[_chip_count*_channel_count])
     , _multichip(true)
@@ -69,8 +71,8 @@ void RCOutput_Sysfs::init()
     } else {
 	uint8_t channel_index;
     	for (uint8_t i = 0; i < _chip_count; i++) {
-		for (uint8_t j = 0; j < _channel_count; j++){
-			channel_index = (i*_channel_count) + j;
+		for (uint8_t j = 0; j < _channel_count_per_chip; j++){
+			channel_index = (i*_channel_count_per_chip) + j;
 			_pwm_channels[channel_index] = new PWM_Sysfs(*(_chip_list+i), _channel_base+j);
 			if (!_pwm_channels[channel_index]) {
 			AP_HAL::panic("RCOutput_Sysfs_PWM: UNable to setup PWM pin.");

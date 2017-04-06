@@ -33,6 +33,7 @@ private:
     const uint8_t *_chip_list;
     const uint8_t _channel_base;
     const uint8_t _channel_count;
+    const uint8_t _channel_count_per_chip;
     const bool _multichip;
     PWM_Sysfs_Base **_pwm_channels;
 

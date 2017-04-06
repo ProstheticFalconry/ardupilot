@@ -7,7 +7,6 @@
 // stabilize_init - initialise stabilize controller
 bool Copter::stabilize_init(bool ignore_checks)
 {
-    printf("\n\n\n*****stabilize initialized****\n\n\n");
     // if landed and the mode we're switching from does not have manual throttle and the throttle stick is too high
     if (!ignore_checks && motors->armed() && ap.land_complete && !mode_has_manual_throttle(control_mode) &&
             (get_pilot_desired_throttle(channel_throttle->get_control_in()) > get_non_takeoff_throttle())) {
@@ -28,11 +27,11 @@ void Copter::stabilize_run()
     float pilot_throttle_scaled;
 
     // if not armed set throttle to zero and exit immediately
-    /*if (!motors->armed() || ap.throttle_zero || !motors->get_interlock()) {
+    if (!motors->armed() || ap.throttle_zero || !motors->get_interlock()) {
         motors->set_desired_spool_state(AP_Motors::DESIRED_SPIN_WHEN_ARMED);
         attitude_control->set_throttle_out_unstabilized(0,true,g.throttle_filt);
         return;
-    }*/
+    }
 
     // clear landing flag
     set_land_complete(false);
@@ -44,16 +43,16 @@ void Copter::stabilize_run()
 
     // convert pilot input to lean angles
     // To-Do: convert get_pilot_desired_lean_angles to return angles as floats
-    //get_pilot_desired_lean_angles(channel_roll->get_control_in(), channel_pitch->get_control_in(), target_roll, target_pitch, aparm.angle_max);
+    get_pilot_desired_lean_angles(channel_roll->get_control_in(), channel_pitch->get_control_in(), target_roll, target_pitch, aparm.angle_max);
 
     // get pilot's desired yaw rate
-    //target_yaw_rate = get_pilot_desired_yaw_rate(channel_yaw->get_control_in());
+    target_yaw_rate = get_pilot_desired_yaw_rate(channel_yaw->get_control_in());
 
     // get pilot's desired throttle
-    pilot_throttle_scaled = 0.5f;
+    pilot_throttle_scaled = get_pilot_desired_throttle(channel_throttle->get_control_in());
 
     // call attitude controller
-    attitude_control->input_euler_angle_roll_pitch_euler_rate_yaw(0, 0, 0, get_smoothing_gain());
+    attitude_control->input_euler_angle_roll_pitch_euler_rate_yaw(target_roll, target_pitch, target_yaw_rate, get_smoothing_gain());
 
     // body-frame rate controller is run directly from 100hz loop
 
