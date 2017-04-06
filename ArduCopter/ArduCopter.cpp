@@ -74,6 +74,7 @@
 
 #include "Copter.h"
 #include <stdio.h>
+#include <unistd.h>
 
 #define SCHED_TASK(func, rate_hz, max_time_micros) SCHED_TASK_CLASS(Copter, &copter, func, rate_hz, max_time_micros)
 
@@ -169,12 +170,12 @@ void Copter::setup()
     init_ardupilot();
     // initialise the main loop schedu
     printf("\nAfter init_ardupilot()\n");
-    scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
+    //scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
     
     // setup initial performance counters
-    perf_info_reset();
-    fast_loopTimer = AP_HAL::micros();
-
+    //perf_info_reset();
+    //fast_loopTimer = AP_HAL::micros();
+    mavlink_compassmot();
 }
 
 /*

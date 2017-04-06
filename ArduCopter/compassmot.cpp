@@ -48,6 +48,7 @@ void Copter::mavlink_compassmot(void)
 
     // check compass health
     compass.read();
+    printf("Compass getcount %d\n",compass.get_count());
     for (uint8_t i=0; i<compass.get_count(); i++) {
         if (!compass.healthy(i)) {
             printf("Compassmot.cpp: compass unhealthy\n");
@@ -83,7 +84,7 @@ void Copter::mavlink_compassmot(void)
     failsafe_disable();
 
     // initialise compass
-    init_compass();
+//    init_compass();
 
     // default compensation type to use current if possible
     comp_type = AP_COMPASS_MOT_COMP_THROTTLE;
@@ -129,9 +130,10 @@ void Copter::mavlink_compassmot(void)
     // initialise run time
     last_run_time = millis();
     last_send_time = millis();
-
+    compass.read();
     // main run while there is no user input and the compass is healthy
-    while (channel_yaw->get_control_in()==860 && compass.healthy(compass.get_primary()) && motors->armed()) {
+    while (channel_roll->get_control_in()==0 && compass.healthy(0) && motors->armed()) {
+        printf("looping \n");
         // 50hz loop
         if (millis() - last_run_time < 20) {
             // grab some compass values
@@ -156,7 +158,6 @@ void Copter::mavlink_compassmot(void)
         // calculate scaling for throttle
         throttle_pct = (float)channel_throttle->get_control_in() / 1000.0f;
         throttle_pct = constrain_float(throttle_pct,0.0f,1.0f);
-
         // if throttle is near zero, update base x,y,z values
         if (throttle_pct <= 0.0f) {
             for (uint8_t i=0; i<compass.get_count(); i++) {
@@ -217,8 +218,8 @@ void Copter::mavlink_compassmot(void)
                                                motor_compensation[compass.get_primary()].z);
     	}
     }
-
-    // stop motors
+    printf("\nroll channel is %d,the compass health is %d\n",channel_roll->get_control_in(),compass.healthy(0));	
+// stop motors
     motors->output_min();
     motors->armed(false);
 

@@ -84,7 +84,6 @@ void RCInput_Falcon::_timer_tick()
 	    change_mode = 1;
 	    break;
 	default:
-	    printf("RCInput_Falcon: Not a recognized firstLetter %u",row);
 	    free(buffer);
 	    return;
 	}
