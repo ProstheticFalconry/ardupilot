@@ -5,7 +5,7 @@
 #include "AP_HAL_Linux.h"
 #include "RCInput.h"
 
-#define CHANNELS 5
+#define CHANNELS 4
 #define MAX_ROWS 6
 #define MAX_FILE_SIZE 11
 

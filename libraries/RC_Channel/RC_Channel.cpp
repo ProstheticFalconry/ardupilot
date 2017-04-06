@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <cmath>
 
 #include <AP_HAL/AP_HAL.h>
@@ -35,7 +36,7 @@ const AP_Param::GroupInfo RC_Channel::var_info[] = {
     // @Range: 800 2200
     // @Increment: 1
     // @User: Advanced
-    AP_GROUPINFO("MIN",  1, RC_Channel, radio_min, 1100),
+    AP_GROUPINFO("MIN",  1, RC_Channel, radio_min, 860),
 
     // @Param: TRIM
     // @DisplayName: RC trim PWM
@@ -44,7 +45,7 @@ const AP_Param::GroupInfo RC_Channel::var_info[] = {
     // @Range: 800 2200
     // @Increment: 1
     // @User: Advanced
-    AP_GROUPINFO("TRIM", 2, RC_Channel, radio_trim, 1500),
+    AP_GROUPINFO("TRIM", 2, RC_Channel, radio_trim, 1360),
 
     // @Param: MAX
     // @DisplayName: RC max PWM
@@ -53,7 +54,7 @@ const AP_Param::GroupInfo RC_Channel::var_info[] = {
     // @Range: 800 2200
     // @Increment: 1
     // @User: Advanced
-    AP_GROUPINFO("MAX",  3, RC_Channel, radio_max, 1900),
+    AP_GROUPINFO("MAX",  3, RC_Channel, radio_max, 1860),
 
     // @Param: REVERSED
     // @DisplayName: RC reversed
@@ -111,12 +112,14 @@ void
 RC_Channel::set_pwm(int16_t pwm)
 {
     radio_in = pwm;
-
+    printf("deadzone = %d\n", dead_zone);
     if (type_in == RC_CHANNEL_TYPE_RANGE) {
-        control_in = pwm_to_range();
+	control_in = pwm_to_range();
+	printf("control_in set to %d (range)\n", control_in);
     } else {
         //RC_CHANNEL_TYPE_ANGLE
         control_in = pwm_to_angle();
+	printf("control_in set to %d (angle)\n", control_in);
     }
 }
 
@@ -236,9 +239,11 @@ RC_Channel::pwm_to_range_dz(uint16_t _dead_zone)
     }
 
     int16_t radio_trim_low  = radio_min + _dead_zone;
+    
+    printf("high_in = %d, radio_trim_low = %d, radio_min = %d, _dead_zone = %d\n", high_in, radio_trim_low, radio_min, _dead_zone);
 
     if (r_in > radio_trim_low) {
-        return (((int32_t)(high_in) * (int32_t)(r_in - radio_trim_low)) / (int32_t)(radio_max - radio_trim_low));
+	return (((int32_t)(high_in) * (int32_t)(r_in - radio_trim_low)) / (int32_t)(radio_max - radio_trim_low));
     }
     return 0;
 }
