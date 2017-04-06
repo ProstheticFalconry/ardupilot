@@ -20,6 +20,11 @@ public:
      * Return true if there has been new input since the last call to new_input()
      */
     virtual bool new_input(void) = 0;
+   
+    /**
+     * Added  to allow reading of flight mode changes from user in BBB impversion
+     */ 
+    virtual uint16_t read_flight_mode(void) = 0;
 
     /**
      * Return the number of valid channels in the last read

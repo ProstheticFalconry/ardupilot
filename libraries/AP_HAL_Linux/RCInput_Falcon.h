@@ -49,6 +49,7 @@ private:
     int change_mode;
     char firstLetter;
     uint16_t RC_value;
+    uint16_t flight_mode;
     uint16_t data_values[CHANNELS];
 
     uint16_t a2i(int start, int length);

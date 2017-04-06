@@ -13,7 +13,7 @@ void Copter::default_dead_zones()
     channel_yaw->set_default_dead_zone(15);
     RC_Channels::rc_channel(CH_6)->set_default_dead_zone(10);
 #else
-    channel_throttle->set_default_dead_zone(30);
+    channel_throttle->set_default_dead_zone(10);
     channel_yaw->set_default_dead_zone(10);
 #endif
     RC_Channels::rc_channel(CH_6)->set_default_dead_zone(0);
@@ -111,7 +111,7 @@ void Copter::read_radio()
 	printf("read_radio pitch = %d\n", channel_pitch->get_control_in());
 	printf("read_radio throttle = %d\n", channel_throttle->get_control_in());
 	printf("read_radio yaw = %d\n", channel_yaw->get_control_in());
-
+	printf("flight mode = %d\n", hal.rcin->read_flight_mode());
         // flag we must have an rc receiver attached
         if (!failsafe.rc_override_active) {
             ap.rc_receiver_present = true;
