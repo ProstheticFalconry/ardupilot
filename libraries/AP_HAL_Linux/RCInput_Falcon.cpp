@@ -29,10 +29,12 @@ RCInput_Falcon::~RCInput_Falcon(void)
 
 void RCInput_Falcon::init()
 {
-    for (int i = 0 ; i < CHANNELS - 1 ; i++) {
-	data_values[i] = 860;
-    }
-    data_values[CHANNELS - 1] = 0;
+    data_values[0] = 1360;
+    data_values[1] = 1360;
+    data_values[2] = 860;
+    data_values[3] = 1360;
+    _update_flight_mode(0);
+
 }
 
 void RCInput_Falcon::_record_altitude(float alt)
@@ -58,6 +60,7 @@ void RCInput_Falcon::_timer_tick()
 {
     buffer = (char *) malloc(MAX_FILE_SIZE+1);
     err = ::read(_fd, buffer, sizeof(buffer));
+    // print buffer if not empty
 
     if (err == -1) {
 	free(buffer);
@@ -97,10 +100,13 @@ void RCInput_Falcon::_timer_tick()
     } else {
 	data_values[row] = RC_value;
 	_update_periods(data_values, (uint8_t) CHANNELS);
-    
+    }
+    if (err > 0) {
+	for (int i = 0; i < CHANNELS; i++) {
+	    printf("datavalues[%u] = %u\n", i, data_values[i]);
+	}
     }
     free(buffer);
-
 }
 
 uint16_t RCInput_Falcon::a2i(int start, int len)

@@ -107,6 +107,11 @@ void Copter::read_radio()
         set_throttle_and_failsafe(channel_throttle->get_radio_in());
         set_throttle_zero_flag(channel_throttle->get_control_in());
 
+	printf("read_radio roll = %d\n", channel_roll->get_control_in());
+	printf("read_radio pitch = %d\n", channel_pitch->get_control_in());
+	printf("read_radio throttle = %d\n", channel_throttle->get_control_in());
+	printf("read_radio yaw = %d\n", channel_yaw->get_control_in());
+
         // flag we must have an rc receiver attached
         if (!failsafe.rc_override_active) {
             ap.rc_receiver_present = true;
@@ -127,7 +132,9 @@ void Copter::read_radio()
         if (((!failsafe.rc_override_active && (elapsed >= FS_RADIO_TIMEOUT_MS)) || (failsafe.rc_override_active && (elapsed >= FS_RADIO_RC_OVERRIDE_TIMEOUT_MS))) &&
             (g.failsafe_throttle && (ap.rc_receiver_present||motors->armed()) && !failsafe.radio)) {
             Log_Write_Error(ERROR_SUBSYSTEM_RADIO, ERROR_CODE_RADIO_LATE_FRAME);
-            set_failsafe_radio(true);
+            printf("Triggered Failsafe");
+	    set_failsafe_radio(true);
+	    
         }
     }
 }
