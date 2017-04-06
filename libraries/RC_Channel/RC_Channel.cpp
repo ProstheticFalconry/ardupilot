@@ -112,14 +112,11 @@ void
 RC_Channel::set_pwm(int16_t pwm)
 {
     radio_in = pwm;
-    printf("deadzone = %d\n", dead_zone);
     if (type_in == RC_CHANNEL_TYPE_RANGE) {
 	control_in = pwm_to_range();
-	printf("control_in set to %d (range)\n", control_in);
     } else {
         //RC_CHANNEL_TYPE_ANGLE
         control_in = pwm_to_angle();
-	printf("control_in set to %d (angle)\n", control_in);
     }
 }
 
@@ -240,8 +237,6 @@ RC_Channel::pwm_to_range_dz(uint16_t _dead_zone)
 
     int16_t radio_trim_low  = radio_min + _dead_zone;
     
-    printf("high_in = %d, radio_trim_low = %d, radio_min = %d, _dead_zone = %d\n", high_in, radio_trim_low, radio_min, _dead_zone);
-
     if (r_in > radio_trim_low) {
 	return (((int32_t)(high_in) * (int32_t)(r_in - radio_trim_low)) / (int32_t)(radio_max - radio_trim_low));
     }

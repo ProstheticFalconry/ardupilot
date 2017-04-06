@@ -33,8 +33,7 @@ void RCInput_Falcon::init()
     data_values[1] = 1360;
     data_values[2] = 860;
     data_values[3] = 1360;
-    _update_flight_mode(0);
-
+    flight_mode = 0;
 }
 
 void RCInput_Falcon::_record_altitude(float alt)
@@ -42,7 +41,6 @@ void RCInput_Falcon::_record_altitude(float alt)
     // copy string of altitude into tmp_buf
     char * tmp_buf;
     tmp_buf = (char *) malloc(MAX_FILE_SIZE);
-    sprintf(tmp_buf, "%10.2f", alt);
 
     // shift string 1 to right and replace first byte with ID
     for (int i = 0; i < MAX_FILE_SIZE - 1; i++) {
@@ -61,7 +59,6 @@ void RCInput_Falcon::_timer_tick()
     buffer = (char *) malloc(MAX_FILE_SIZE+1);
     err = ::read(_fd, buffer, sizeof(buffer));
     // print buffer if not empty
-
     if (err == -1) {
 	free(buffer);
         AP_HAL::panic("RCInput_Falcon: Error reading in _timer_tick()");
@@ -81,9 +78,11 @@ void RCInput_Falcon::_timer_tick()
 	    row = THROT_OFFSET;
 	    break;
 	case YAW_MN:
+	    printf("YAW\n");
 	    row = YAW_OFFSET;
 	    break;
 	case MODE_MN:
+	    printf("MODE\n");
 	    change_mode = 1;
 	    break;
 	default:
@@ -96,7 +95,8 @@ void RCInput_Falcon::_timer_tick()
 	}
 	RC_value = a2i(1, length);
     if (change_mode == 1) {
-	_update_flight_mode(RC_value);
+	flight_mode = RC_value;
+	_update_flight_mode(flight_mode);
     } else {
 	data_values[row] = RC_value;
 	_update_periods(data_values, (uint8_t) CHANNELS);
@@ -105,6 +105,7 @@ void RCInput_Falcon::_timer_tick()
 	for (int i = 0; i < CHANNELS; i++) {
 	    printf("datavalues[%u] = %u\n", i, data_values[i]);
 	}
+	printf("flight mode = %u\n\n", flight_mode);
     }
     free(buffer);
 }
