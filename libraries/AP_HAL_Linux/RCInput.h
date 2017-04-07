@@ -22,7 +22,14 @@ public:
     uint16_t read(uint8_t ch);
     uint8_t read(uint16_t* periods, uint8_t len);
 
+    // For main flight control to read new flight mode from user
     uint16_t read_flight_mode();
+   
+    // Functions used by ArduCopter to send data to user 
+    void record_altitude(float);
+    void record_compass(float);
+    void record_acceleration(float);
+    void record_gyroscope(float);
 
     bool set_overrides(int16_t *overrides, uint8_t len);
     bool set_override(uint8_t channel, int16_t override);
@@ -50,15 +57,23 @@ public:
 protected:
     void _process_rc_pulse(uint16_t width_s0, uint16_t width_s1);
     void _update_periods(uint16_t *periods, uint8_t len);
+    // update flight_mode with data from user
     void _update_flight_mode(uint16_t);
 
+    // Variable used by ArduCopter to send sensor data to user
+    enum data_type_names {compass, acceleration, altitude, gyroscope};
+    struct {
+	bool pending;
+	data_type_names type;
+	float values;
+    } output_data;
 
     std::atomic<unsigned int> rc_input_count;
     std::atomic<unsigned int> last_rc_input_count;
 
     uint16_t _pwm_values[LINUX_RC_INPUT_NUM_CHANNELS];
     uint8_t  _num_channels;
-    uint16_t new_flight_mode;
+    uint16_t flight_mode;
 
     void _process_ppmsum_pulse(uint16_t width);
     void _process_sbus_pulse(uint16_t width_s0, uint16_t width_s1);

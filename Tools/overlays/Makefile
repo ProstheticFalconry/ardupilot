@@ -28,5 +28,6 @@ config:
 	config-pin P9.16 pwm
 	config-pin P8.13 pwm
 	config-pin P8.19 pwm
-
+	config-pin P9.29 pwm
+	config-pin P9.31 pwm
 

@@ -25,6 +25,7 @@ public:
      * Added  to allow reading of flight mode changes from user in BBB impversion
      */ 
     virtual uint16_t read_flight_mode(void) = 0;
+    virtual void record_altitude(float alt) = 0;
 
     /**
      * Return the number of valid channels in the last read

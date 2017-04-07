@@ -23,9 +23,10 @@
 #define MODE_MN 43
 
 // RCOutput Modes
-#define COMPASS_ID 0
-#define ALTITUDE_ID 1
-#define CLIMB_RATE_ID 2
+#define MAG_ID 44
+#define ACCEL_ID 45
+#define ALT_ID 46
+#define GYRO_ID 47
 
 
 namespace Linux {
@@ -35,16 +36,13 @@ class RCInput_Falcon : public RCInput
 public:
     RCInput_Falcon(const char *path);
     ~RCInput_Falcon();
-
     void init() override;
     void _timer_tick(void) override;
-    void _record_compass(float);
-    void _record_altitude(float);
-    void _record_climbrate(float);
 private:
+    void _record_data(void);
+    
     int _fd;
     int err;
-    int length;
     char * buffer;
     int change_mode;
     char firstLetter;

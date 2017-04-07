@@ -134,7 +134,7 @@ void RCInput::_process_ppmsum_pulse(uint16_t width_usec)
         // buffer these
         ppm_state._pulse_capt[ppm_state._channel_counter] = width_usec;
 
-        // move to next channel
+       // move to next channel
         ppm_state._channel_counter++;
     }
 
@@ -340,7 +340,7 @@ void RCInput::_process_rc_pulse(uint16_t width_s0, uint16_t width_s1)
 }
 
 /*
- * Update channel values directly
+ * Update channel values directly from user space
  */
 void RCInput::_update_periods(uint16_t *periods, uint8_t len)
 {
@@ -354,15 +354,41 @@ void RCInput::_update_periods(uint16_t *periods, uint8_t len)
     rc_input_count++;
 }
 
+/* Update the flight mode from user space */
+
 void RCInput::_update_flight_mode(uint16_t mode)
 {
-    if (mode == new_flight_mode) return;
-    else new_flight_mode = mode;
+    if (mode == flight_mode) return;
+    else flight_mode = mode;
 }
 
+/* returns flight_mode for higher level functions */
 uint16_t RCInput::read_flight_mode() {
-    return new_flight_mode;
+    return flight_mode;
 }
+
+/* Write sensor values to user space */
+void RCInput::record_altitude(float alt) {
+    output_data.values = alt;
+    output_data.type = altitude;
+    output_data.pending = true;
+}
+void RCInput::record_compass(float comp) {
+    output_data.values = comp;
+    output_data.type = compass;
+    output_data.pending = true;
+}
+void RCInput::record_acceleration(float accel) {
+    output_data.values = accel;
+    output_data.type = acceleration;
+    output_data.pending = true;
+}
+void RCInput::record_gyroscope(float gyro) {
+    output_data.values = gyro;
+    output_data.type = gyroscope;
+    output_data.pending = true;
+}
+
 
 /*
   add some bytes of input in DSM serial stream format, coping with partial packets
