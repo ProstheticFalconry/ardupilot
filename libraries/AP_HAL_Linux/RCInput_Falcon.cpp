@@ -33,10 +33,10 @@ void RCInput_Falcon::init()
     data_values[1] = 1360;
     data_values[2] = 860;
     data_values[3] = 1360;
-    flight_mode = 0;
-    output_data.pending = true;
+    flight_mode = AUTO;
+    output_data.pending = false;
     output_data.type = altitude;
-    output_data.values = 123.456;
+    output_data.values = 0;
 }
 
 void RCInput_Falcon::_record_data()
@@ -128,13 +128,15 @@ void RCInput_Falcon::_timer_tick()
 	_update_periods(data_values, (uint8_t) CHANNELS);
     }
 
-    /* Debug print statements DELETE */ 
+    /* Debug print statements DELETE */
+    /* 
     if (err > 0) {
 	for (int i = 0; i < CHANNELS; i++) {
 	    printf("datavalues[%u] = %u\n", i, data_values[i]);
 	}
 	printf("flight mode = %u\n\n", flight_mode);
     }
+    */
     free(buffer);
 
     /*******************

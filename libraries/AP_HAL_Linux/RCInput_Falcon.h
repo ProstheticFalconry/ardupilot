@@ -15,7 +15,8 @@
 #define THROT_OFFSET 2
 #define YAW_OFFSET 3
 
-// RCInput Modes
+
+// RCInput data types
 #define THROT_MN 39
 #define ROLL_MN 40
 #define PITCH_MN 41

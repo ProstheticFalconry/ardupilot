@@ -6,6 +6,12 @@
 
 #define LINUX_RC_INPUT_NUM_CHANNELS 16
 
+// RCInput_FALCON Flight Modes
+#define FALCON_AUTO 39
+#define FALCON_STABILIZE 40
+#define FALCON_ALT_HOLD 41
+#define FALCON_BRAKE 42
+
 namespace Linux {
 
 class RCInput : public AP_HAL::RCInput {
