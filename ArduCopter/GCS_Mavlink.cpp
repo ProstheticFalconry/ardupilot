@@ -1111,6 +1111,7 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
 
         case MAV_CMD_DO_FLIGHTTERMINATION:
             if (packet.param1 > 0.5f) {
+		printf("\n***\nGCS_Mavlink.cpp: flight termination disarm\n***\n");
                 copter.init_disarm_motors();
                 result = MAV_RESULT_ACCEPTED;
             }
@@ -1221,13 +1222,13 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
                 }
             } else if (is_zero(packet.param1) && (copter.ap.land_complete || is_equal(packet.param2,21196.0f)))  {
                 // force disarming by setting param2 = 21196 is deprecated
+		printf("\n***\nGCS_Mavlink.cpp: recieved disarmd command\n***\n");
                 copter.init_disarm_motors();
                 result = MAV_RESULT_ACCEPTED;
             } else {
                 result = MAV_RESULT_UNSUPPORTED;
             }
             break;
-
         case MAV_CMD_GET_HOME_POSITION:
             if (copter.ap.home_state != HOME_UNSET) {
                 send_home(copter.ahrs.get_home());
@@ -1431,6 +1432,7 @@ void GCS_MAVLINK_Copter::handleMessage(mavlink_message_t* msg)
             if (copter.motors->armed()) {
                 if (copter.ap.land_complete) {
                     // if landed, disarm motors
+		    printf("\n***\nGCS_Mavlink.cpp: disarmed 2\n***\n");
                     copter.init_disarm_motors();
                 } else {
                     // assume that shots modes are all done in guided.

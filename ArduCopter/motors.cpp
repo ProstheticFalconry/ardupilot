@@ -58,6 +58,7 @@ void Copter::arm_motors_check()
 
         // disarm the motors
         if (arming_counter == DISARM_DELAY && motors->armed()) {
+	    printf("\n***\nmotors.cpp: Motrs disarmed due to arm check\n***\n");
             init_disarm_motors();
         }
 
@@ -113,6 +114,7 @@ void Copter::auto_disarm_check()
 
     // disarm once timer expires
     if ((tnow_ms-auto_disarm_begin) >= disarm_delay_ms) {
+        printf("\n***\nmotors.cpp: disarmed due to disarm check\n***\n");
         init_disarm_motors();
         auto_disarm_begin = tnow_ms;
     }
@@ -224,6 +226,7 @@ bool Copter::init_arm_motors(bool arming_from_gcs)
 // init_disarm_motors - disarm motors
 void Copter::init_disarm_motors()
 {
+    printf("\n********\nMotors being disarmed\n********\n");
     // return immediately if we are already disarmed
     if (!motors->armed()) {
         return;

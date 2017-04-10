@@ -579,6 +579,7 @@ void Copter::do_aux_switch_function(int8_t ch_function, uint8_t ch_flag)
                 init_arm_motors(false);
                 break;
             case AUX_SWITCH_LOW:
+		printf("\n***\nsystem.cpp: Motors disarmed due to aux switch low\n***\n");
                 init_disarm_motors();
                 break;
             }

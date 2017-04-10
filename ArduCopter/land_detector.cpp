@@ -111,6 +111,7 @@ void Copter::set_land_complete(bool b)
     bool mode_disarms_on_land = mode_allows_arming(control_mode,false) && !mode_has_manual_throttle(control_mode);
 
     if (ap.land_complete && motors->armed() && disarm_on_land_configured && mode_disarms_on_land) {
+	printf("\n***\nland_detect.cpp: disarmed due to land detect\n***\n");
         init_disarm_motors();
     }
 }

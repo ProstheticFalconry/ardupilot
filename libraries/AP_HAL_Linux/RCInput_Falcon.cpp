@@ -33,7 +33,7 @@ void RCInput_Falcon::init()
     data_values[1] = 1360;
     data_values[2] = 860;
     data_values[3] = 1360;
-    flight_mode = AUTO;
+    flight_mode = FALCON_AUTO;
     output_data.pending = false;
     output_data.type = altitude;
     output_data.values = 0;

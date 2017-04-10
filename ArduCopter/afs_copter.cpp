@@ -22,6 +22,7 @@ void AP_AdvancedFailsafe_Copter::terminate_vehicle(void)
     copter.motors->output();
 
     // disarm as well
+    printf("\n***\nafs_copter.cpp: disarm due to advanced failesafe\n***\n")
     copter.init_disarm_motors();
     
     // and set all aux channels

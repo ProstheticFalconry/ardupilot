@@ -12,6 +12,7 @@ void Copter::failsafe_radio_on_event()
     }
 
     if (should_disarm_on_failsafe()) {
+	printf("\n***\nevents.cpp: Disarmed due to radio event failsafe\n***\n");
         init_disarm_motors();
     } else {
         if (control_mode == AUTO && g.failsafe_throttle == FS_THR_ENABLED_CONTINUE_MISSION) {
@@ -52,6 +53,7 @@ void Copter::failsafe_battery_event(void)
     // failsafe check
     if (g.failsafe_battery_enabled != FS_BATT_DISABLED && motors->armed()) {
         if (should_disarm_on_failsafe()) {
+	    printf("\n***\nevents.cpp: Disarm due to battery check\n***\n");
             init_disarm_motors();
         } else {
             if (g.failsafe_battery_enabled == FS_BATT_RTL || control_mode == AUTO) {
@@ -111,6 +113,7 @@ void Copter::failsafe_gcs_check()
     failsafe.rc_override_active = false;
 
     if (should_disarm_on_failsafe()) {
+	printf("\n***\nevents.cpp: Shutdown due to gcs check\n***\n");
         init_disarm_motors();
     } else {
         if (control_mode == AUTO && g.failsafe_gcs == FS_GCS_ENABLED_CONTINUE_MISSION) {
@@ -140,6 +143,7 @@ void Copter::failsafe_terrain_check()
     // check for clearing of event
     if (trigger_event != failsafe.terrain) {
         if (trigger_event) {
+	    printf("\n***\nevents.cpp: shutdown due to terrain failsafe\n***\n");
             failsafe_terrain_on_event();
         } else {
             Log_Write_Error(ERROR_SUBSYSTEM_FAILSAFE_TERRAIN, ERROR_CODE_ERROR_RESOLVED);
@@ -176,6 +180,7 @@ void Copter::failsafe_terrain_on_event()
     Log_Write_Error(ERROR_SUBSYSTEM_FAILSAFE_TERRAIN, ERROR_CODE_FAILSAFE_OCCURRED);
 
     if (should_disarm_on_failsafe()) {
+	printf("\n***\nevents.cpp: shutdown due to terrain event\n***\n");
         init_disarm_motors();
     } else if (control_mode == RTL) {
         rtl_restart_without_terrain();

@@ -270,6 +270,7 @@ void Copter::exit_mission()
         }
     }else{
         // if we've landed it's safe to disarm
+	printf("\n***\ncommands_logic.cpp: disarmed due to commands logic\n***\n");
         init_disarm_motors();
     }
 }

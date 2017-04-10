@@ -377,6 +377,7 @@ void Copter::rtl_land_run()
 
         // disarm when the landing detector says we've landed
         if (ap.land_complete) {
+	    printf("\n***\ncontrol_rtl.cpp: land detected disarm\n***\n");
             init_disarm_motors();
         }
 

@@ -60,6 +60,7 @@ void Copter::brake_run()
 
     // if landed immediately disarm
     if (ap.land_complete) {
+	printf("\n***\ncontrol_brake.cpp: Disarm due to break\n***\n");
         init_disarm_motors();
     }
 

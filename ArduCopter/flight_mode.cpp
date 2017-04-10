@@ -27,6 +27,7 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
 
     switch (mode) {
         case ACRO:
+	    printf("In ACRO %d\n",ACRO);
             #if FRAME_CONFIG == HELI_FRAME
                 success = heli_acro_init(ignore_checks);
             #else
@@ -45,42 +46,52 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
             break;
 
         case ALT_HOLD:
+            printf("In ALT_HOLD %d\n",ALT_HOLD);
             success = althold_init(ignore_checks);
             break;
 
         case AUTO:
+	    printf("In AUTO %d\n",AUTO);
             success = auto_init(ignore_checks);
             break;
 
         case CIRCLE:
+	    printf("In CIRCLE %d\n",CIRCLE);
             success = circle_init(ignore_checks);
             break;
 
         case LOITER:
+	    printf("In LOITER %d\n",LOITER);
             success = loiter_init(ignore_checks);
             break;
 
         case GUIDED:
+	    printf("In GUIDED %d\n",GUIDED);
             success = guided_init(ignore_checks);
             break;
 
         case LAND:
+	    printf("In LAND %d\n",LAND);
             success = land_init(ignore_checks);
             break;
 
         case RTL:
+	    printf("In RTL %d\n",RTL);
             success = rtl_init(ignore_checks);
             break;
 
         case DRIFT:
+	    printf("In DRIFT %d\n",DRIFT);
             success = drift_init(ignore_checks);
             break;
 
         case SPORT:
+	    printf("In SPORT %d\n",SPORT);
             success = sport_init(ignore_checks);
             break;
 
         case FLIP:
+	    printf("In FLIP %d\n",FLIP);
             success = flip_init(ignore_checks);
             break;
 
@@ -97,18 +108,22 @@ bool Copter::set_mode(control_mode_t mode, mode_reason_t reason)
 #endif
 
         case BRAKE:
+	    printf("In BRAKE %d\n",BRAKE);
             success = brake_init(ignore_checks);
             break;
 
         case THROW:
+	    printf("In THROW %d\n",THROW);
             success = throw_init(ignore_checks);
             break;
 
         case AVOID_ADSB:
+	    printf("In AVOID_ADSB %d\n",AVOID_ADSB);
             success = avoid_adsb_init(ignore_checks);
             break;
 
         case GUIDED_NOGPS:
+	    printf("In GUIDED_NOGPS %d\n",GUIDED_NOGPS);
             success = guided_nogps_init(ignore_checks);
             break;
 

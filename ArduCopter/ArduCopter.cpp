@@ -84,7 +84,7 @@
   and the maximum time they are expected to take (in microseconds)
  */
 const AP_Scheduler::Task Copter::scheduler_tasks[] = {
-//    SCHED_TASK(rc_loop,              100,    130),
+    SCHED_TASK(rc_loop,              100,    130),
     SCHED_TASK(throttle_loop,         50,     75),
     SCHED_TASK(update_GPS,            50,    200),
 #if OPTFLOW == ENABLED
@@ -93,7 +93,7 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
     SCHED_TASK(update_batt_compass,   10,    120),
     SCHED_TASK(read_aux_switches,     10,     50),
     SCHED_TASK(arm_motors_check,      10,     50),
-    SCHED_TASK(auto_disarm_check,     10,     50),
+    //SCHED_TASK(auto_disarm_check,     10,     50),
     SCHED_TASK(auto_trim,             10,     75),
     SCHED_TASK(read_rangefinder,      20,    100),
     SCHED_TASK(update_proximity,     100,     50),
@@ -112,7 +112,7 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 #endif
     SCHED_TASK(update_notify,         50,     90),
     SCHED_TASK(one_hz_loop,            1,    100),
-    SCHED_TASK(ekf_check,             10,     75),
+//    SCHED_TASK(ekf_check,             10,     75),
     SCHED_TASK(landinggear_update,    10,     75),
     SCHED_TASK(lost_vehicle_check,    10,     50),
     SCHED_TASK(gcs_check_input,      400,    180),
@@ -156,6 +156,7 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 #endif
     SCHED_TASK(button_update,          5,    100),
     SCHED_TASK(stats_update,           1,    100),
+    SCHED_TASK(check_mode_change,     10,   100)
 };
 
 
@@ -170,12 +171,15 @@ void Copter::setup()
     init_ardupilot();
     // initialise the main loop schedu
     printf("\nAfter init_ardupilot()\n");
-    //scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
+    scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
     
     // setup initial performance counters
-    //perf_info_reset();
-    //fast_loopTimer = AP_HAL::micros();
-    mavlink_compassmot();
+    perf_info_reset();
+    fast_loopTimer = AP_HAL::micros();
+    g.failsafe_throttle = FS_THR_DISABLED;
+    g.failsafe_battery_enabled = FS_BATT_DISABLED;
+    init_arm_motors(false);
+//    mavlink_compassmot();
 }
 
 /*
@@ -300,7 +304,7 @@ void Copter::rc_loop()
     // Read radio and 3-position switch on radio
     // -----------------------------------------
     read_radio();
-    read_control_switch();
+    //read_control_switch();
 }
 
 // throttle_loop - should be run at 50 hz
@@ -618,6 +622,25 @@ void Copter::update_altitude()
     if (should_log(MASK_LOG_CTUN)) {
         Log_Write_Control_Tuning();
     }
+}
+
+void Copter::check_mode_change(){
+	int target_mode=hal.rcin->read_flight_mode();
+	switch (target_mode){
+		case FALCON_AUTO:
+			set_mode(AUTO, MODE_REASON_UNKNOWN);
+			break;
+		case FALCON_STABILIZE:
+			set_mode(STABILIZE, MODE_REASON_UNKNOWN);
+			break;
+		case FALCON_ALT_HOLD:
+			set_mode(ALT_HOLD, MODE_REASON_UNKNOWN);
+			break;
+		case FALCON_BRAKE:
+			set_mode(BRAKE, MODE_REASON_UNKNOWN);
+			break;
+		
+	}
 }
 
 AP_HAL_MAIN_CALLBACKS(&copter);

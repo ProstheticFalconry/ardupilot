@@ -68,6 +68,7 @@ void Copter::land_gps_run()
 
         // disarm when the landing detector says we've landed
         if (ap.land_complete) {
+	    printf("\n***\ncontrol_land.cpp: Disarmed due to land\n***\n");
             init_disarm_motors();
         }
         return;
@@ -127,6 +128,7 @@ void Copter::land_nogps_run()
 
         // disarm when the landing detector says we've landed
         if (ap.land_complete) {
+	    printf("\n***\ncontrol_land.cpp: disarmed due to land detected\n***\n");
             init_disarm_motors();
         }
         return;

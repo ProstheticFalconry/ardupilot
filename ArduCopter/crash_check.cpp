@@ -47,6 +47,7 @@ void Copter::crash_check()
         // send message to gcs
         gcs_send_text(MAV_SEVERITY_EMERGENCY,"Crash: Disarming");
         // disarm motors
+	printf("\n***\ncrash_check.cpp: Copter thinks it crashed\n***\n");
         init_disarm_motors();
     }
 }
@@ -140,6 +141,7 @@ void Copter::parachute_release()
     Log_Write_Event(DATA_PARACHUTE_RELEASED);
 
     // disarm motors
+    printf("\n***\ncrash_check.cpp: parachute released\n***\n");
     init_disarm_motors();
 
     // release parachute

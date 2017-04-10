@@ -107,11 +107,6 @@ void Copter::read_radio()
         set_throttle_and_failsafe(channel_throttle->get_radio_in());
         set_throttle_zero_flag(channel_throttle->get_control_in());
 
-	printf("read_radio roll = %d\n", channel_roll->get_control_in());
-	printf("read_radio pitch = %d\n", channel_pitch->get_control_in());
-	printf("read_radio throttle = %d\n", channel_throttle->get_control_in());
-	printf("read_radio yaw = %d\n", channel_yaw->get_control_in());
-	printf("flight mode = %d\n", hal.rcin->read_flight_mode());
         
 	// flag we must have an rc receiver attached
         if (!failsafe.rc_override_active) {
@@ -133,7 +128,6 @@ void Copter::read_radio()
         if (((!failsafe.rc_override_active && (elapsed >= FS_RADIO_TIMEOUT_MS)) || (failsafe.rc_override_active && (elapsed >= FS_RADIO_RC_OVERRIDE_TIMEOUT_MS))) &&
             (g.failsafe_throttle && (ap.rc_receiver_present||motors->armed()) && !failsafe.radio)) {
             Log_Write_Error(ERROR_SUBSYSTEM_RADIO, ERROR_CODE_RADIO_LATE_FRAME);
-            printf("Triggered Failsafe");
 	    set_failsafe_radio(true);
 	    
         }
@@ -189,16 +183,14 @@ void Copter::set_throttle_and_failsafe(uint16_t throttle_pwm)
 // or the pilot has shut down the copter in the air and it is free-falling
 void Copter::set_throttle_zero_flag(int16_t throttle_control)
 {
-    static uint32_t last_nonzero_throttle_ms = 0;
-    uint32_t tnow_ms = millis();
 
     // if not using throttle interlock and non-zero throttle and not E-stopped,
     // or using motor interlock and it's enabled, then motors are running, 
     // and we are flying. Immediately set as non-zero
-    if ((!ap.using_interlock && (throttle_control > 0) && !ap.motor_emergency_stop) || (ap.using_interlock && motors->get_interlock())) {
-        last_nonzero_throttle_ms = tnow_ms;
+    printf("control in is %d\n",throttle_control);
+    if (throttle_control > 0) {
         ap.throttle_zero = false;
-    } else if (tnow_ms - last_nonzero_throttle_ms > THROTTLE_ZERO_DEBOUNCE_TIME_MS) {
+    } else {
         ap.throttle_zero = true;
     }
 }

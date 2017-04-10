@@ -88,7 +88,7 @@
 #include <AC_InputManager/AC_InputManager_Heli.h>   // Heli specific pilot input handling library
 #include <AP_Button/AP_Button.h>
 #include <AP_Arming/AP_Arming.h>
-
+#include <AP_HAL_Linux/RCInput_Falcon.h>
 // Configuration
 #include "defines.h"
 #include "config.h"
@@ -609,7 +609,7 @@ private:
     static const AP_Scheduler::Task scheduler_tasks[];
     static const AP_Param::Info var_info[];
     static const struct LogStructure log_structure[];
-
+    void check_mode_change(void);
     void compass_accumulate(void);
     void compass_cal_update(void);
     void barometer_accumulate(void);
